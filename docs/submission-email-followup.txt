@@ -1,0 +1,41 @@
+Subject: Live Links - Practical Test, Chirag Thakar
+
+Hi Team,
+
+Quick follow-up to my previous mail - both innings are now live, so you can open
+everything straight in the browser without downloading the ZIP. 🏏
+
+Live Demo:   https://crgthakar.github.io/Cricheros/
+Source Code: https://github.com/CrgThakar/Cricheros
+
+🏏 First Innings - Match Summary
+https://crgthakar.github.io/Cricheros/scorecard-option-1/
+
+🔥 Second Innings - Live Score Ticker
+
+Option 1 - Broadcast Bar
+https://crgthakar.github.io/Cricheros/ticker-option-1-broadcast-bar/
+
+Option 2 - Corner Card
+https://crgthakar.github.io/Cricheros/ticker-option-2-corner-card/
+
+Option 3 - Baseline Strip
+https://crgthakar.github.io/Cricheros/ticker-option-3-baseline-strip/
+
+Option 4 - Replay Wall
+https://crgthakar.github.io/Cricheros/ticker-option-4-replay-wall/
+
+Each ticker includes controls to trigger a Four, Six, or Wicket, plus an
+Auto-play Demo. Press H to hide the controls and view the clean streaming
+overlay.
+
+Design notes for both innings:
+https://crgthakar.github.io/Cricheros/explanation.html
+
+Happy to walk through the thinking, or take any one ticker option into the next
+over.
+
+Thanks again for the opportunity.
+
+Best regards,
+Chirag Thakar
