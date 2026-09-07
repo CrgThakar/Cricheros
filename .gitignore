@@ -1,0 +1,16 @@
+# Build output — regenerate with `python scripts/build.py`
+public/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+
+
+# Zip output — regenerate with `python scripts/make-zips.py`
+dist/

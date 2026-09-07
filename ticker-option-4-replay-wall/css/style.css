@@ -1,0 +1,246 @@
+/* =============================================================================
+   Replay Wall — live cricket ticker, option 4
+   The event is not a graphic on top of the picture, it is a break in the
+   picture. A full-screen wipe crosses the frame carrying the word; the feed
+   cuts to replay underneath it; the wipe leaves; the replay plays with a badge
+   and the shot detail; then the wipe crosses back to live. The score bar is
+   deliberately plain, because the replay is the show.
+   ============================================================================= */
+
+:root{
+  --k0:#07090d; --k1:#0e1219; --k2:#161c26;
+  --line:rgb(255 255 255 / 11%);
+  --white:#f6f8fb; --mute:#96a1ae; --dim:#5f6a77;
+  --live:#ff2d46;
+  --four:#2fc4ff; --six:#ffc233; --wkt:#ff3b4c; --fifty:#6cf0a0; --neutral:#9fb0c4;
+  --f-score:'Saira Condensed','Arial Narrow',sans-serif;
+  --f-name:'Barlow Condensed','Arial Narrow',sans-serif;
+  --f-ui:'Barlow Semi Condensed',system-ui,sans-serif;
+  --ev:var(--four); --d1:#12688c; --d2:#073649;
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+html,body{ height:100%; }
+body{ background:#000; color:var(--white); overflow:hidden; font-family:var(--f-ui); }
+.viewport{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:#000; }
+.stage{ position:relative; width:1920px; height:1080px; flex:none; transform-origin:center; overflow:hidden; background:#05070a; }
+
+/* ---------- feeds --------------------------------------------------------- */
+.feed{ position:absolute; inset:0; }
+/* Still frame sits under the embed, so a blocked feed still reads as footage. */
+.feed::before{ content:""; position:absolute; inset:0; z-index:0;
+  background:#05070a url("../assets/stream-frame.webp") center/cover no-repeat; }
+.feed.replay{ opacity:0; visibility:hidden; }
+/* Replay reads as replay: pushed in slightly, cooled off, softly vignetted. */
+.feed.replay::before{ transform:scale(1.06); filter:contrast(1.08) saturate(.82) brightness(.92); }
+.feed.replay .scanlines{ position:absolute; inset:0; pointer-events:none; z-index:2;
+  background:
+    repeating-linear-gradient(0deg, rgb(0 0 0 / 22%) 0 2px, transparent 2px 4px),
+    radial-gradient(120% 90% at 50% 50%, transparent 45%, rgb(0 0 0 / 55%) 100%); }
+.stage.is-replay .feed.live{ opacity:0; visibility:hidden; }
+.stage.is-replay .feed.replay{ opacity:1; visibility:visible; }
+
+/* ---------- full-screen wipe --------------------------------------------- */
+/* One panel crosses the whole frame. The feed swap happens while it covers the
+   picture, so the cut is never seen. */
+.wipe{ position:absolute; inset:0; z-index:40; pointer-events:none; visibility:hidden; }
+.wipe-fill{ position:absolute; inset:0 0 0 0;
+  background:linear-gradient(100deg, var(--d2) 0%, var(--d1) 40%, var(--ev) 100%);
+  transform:translateX(-101%) skewX(-8deg); transform-origin:0 50%; }
+.wipe-word{
+  position:absolute; inset:0; display:grid; place-items:center;
+  font:900 250px/.9 var(--f-score); letter-spacing:4px; text-transform:uppercase; color:#fff;
+  -webkit-text-stroke:1px rgb(255 255 255 / 30%);
+  text-shadow:
+    2px 2px 0 var(--d1), 4px 4px 0 var(--d1), 6px 6px 0 var(--d2), 8px 8px 0 var(--d2),
+    10px 10px 0 var(--d2), 12px 12px 0 var(--d2), 16px 22px 6px rgb(0 0 0 / 45%);
+  opacity:0; transform:scale(.8);
+}
+.wipe.on{ visibility:visible; }
+.wipe.on .wipe-fill{ animation:wipeAcross var(--wipe,1100ms) cubic-bezier(.65,0,.2,1) both; }
+.wipe.on .wipe-word{ animation:wipeWord var(--wipe,1100ms) cubic-bezier(.2,1.1,.3,1) both; }
+/* In: sweep from the left to full cover. Out: keep going off to the right. */
+@keyframes wipeAcross{
+  0%{ transform:translateX(-101%) skewX(-8deg) }
+  45%{ transform:translateX(0) skewX(-8deg) }
+  55%{ transform:translateX(0) skewX(-8deg) }
+  100%{ transform:translateX(101%) skewX(-8deg) }
+}
+@keyframes wipeWord{
+  0%{ opacity:0; transform:scale(.72) }
+  30%{ opacity:1; transform:scale(1) }
+  58%{ opacity:1; transform:scale(1.02) }
+  75%{ opacity:0; transform:scale(1.1) }
+  100%{ opacity:0 }
+}
+
+/* ---------- replay furniture --------------------------------------------- */
+.rp-badge{
+  position:absolute; top:48px; left:48px; z-index:20;
+  display:flex; align-items:center; gap:12px; padding:12px 20px 12px 16px;
+  background:rgb(7 9 13 / 82%); border-left:5px solid var(--ev);
+  opacity:0; transform:translateX(-16px); transition:opacity .3s ease, transform .35s cubic-bezier(.2,.9,.2,1);
+}
+.rp-badge i{ width:12px; height:12px; border-radius:50%; background:var(--ev); box-shadow:0 0 14px var(--ev);
+  animation:blip 1.1s ease-in-out infinite; }
+@keyframes blip{ 0%,100%{ opacity:1 } 50%{ opacity:.25 } }
+.rp-badge b{ font:800 22px/1 var(--f-ui); letter-spacing:4px; text-transform:uppercase; }
+.rp-badge em{ font:600 18px/1 var(--f-ui); font-style:normal; letter-spacing:2px; text-transform:uppercase; color:var(--ev); }
+.stage.is-replay .rp-badge{ opacity:1; transform:none; }
+
+.rp-shot{
+  position:absolute; left:48px; right:48px; bottom:48px; z-index:20;
+  display:flex; align-items:center; gap:26px; padding:22px 30px;
+  background:linear-gradient(90deg, rgb(7 9 13 / 92%), rgb(7 9 13 / 72%));
+  border-left:6px solid var(--ev);
+  opacity:0; transform:translateY(24px); transition:opacity .3s ease, transform .4s cubic-bezier(.2,.9,.2,1);
+}
+.rp-shot-word{
+  font:900 76px/1 var(--f-score); letter-spacing:2px; text-transform:uppercase; color:var(--ev);
+  -webkit-text-stroke:1px rgb(255 255 255 / 22%);
+  text-shadow:2px 2px 0 var(--d1), 4px 4px 0 var(--d2), 6px 6px 0 var(--d2), 7px 10px 4px rgb(0 0 0 / 45%);
+}
+.rp-shot-copy{ display:flex; flex-direction:column; gap:7px; min-width:0; }
+.rp-shot-copy b{ font:700 38px/1 var(--f-name); letter-spacing:.3px; }
+.rp-shot-copy em{ font:500 20px/1 var(--f-ui); font-style:normal; color:var(--mute); letter-spacing:.3px; }
+.rp-shot-score{ margin-left:auto; font:800 30px/1 var(--f-score); letter-spacing:.5px; white-space:nowrap; }
+.stage.is-replay .rp-shot{ opacity:1; transform:none; }
+
+/* event tints */
+.stage.ev-four{ --ev:var(--four); --d1:#12688c; --d2:#073649; }
+.stage.ev-six{ --ev:var(--six); --d1:#b07d10; --d2:#5c3f04; }
+.stage.ev-wicket{ --ev:var(--wkt); --d1:#a5121f; --d2:#530810; }
+.stage.ev-fifty{ --ev:var(--fifty); --d1:#209152; --d2:#0b4526; }
+.stage.ev-over{ --ev:var(--neutral); --d1:#41506180; --d2:#232c37; }
+
+/* ---------- live score bar ------------------------------------------------ */
+.bar{
+  position:absolute; left:48px; right:48px; bottom:48px; height:86px; z-index:15;
+  display:grid; grid-template-columns:260px 300px 1fr 330px 250px; align-items:center;
+  background:linear-gradient(180deg, rgb(22 28 38 / 96%), rgb(7 9 13 / 96%));
+  box-shadow:0 20px 46px rgb(0 0 0 / 55%), inset 0 1px 0 rgb(255 255 255 / 8%);
+  animation:barIn .6s .2s cubic-bezier(.2,.9,.2,1) both;
+  transition:opacity .25s ease, transform .35s cubic-bezier(.2,.9,.2,1);
+}
+@keyframes barIn{ from{ opacity:0; transform:translateY(30px) } to{ opacity:1; transform:none } }
+/* The bar steps aside while the replay owns the frame. */
+.stage.is-replay .bar{ opacity:0; transform:translateY(26px); pointer-events:none; }
+.bar > *{ position:relative; display:flex; align-items:center; padding:0 22px; min-width:0; }
+.bar > * + *::before{ content:""; position:absolute; left:0; top:16px; bottom:16px; width:1px; background:var(--line); }
+.bar small{ font:600 11px/1 var(--f-ui); letter-spacing:2.2px; text-transform:uppercase; color:var(--dim); }
+
+.bar-team{ gap:12px; }
+.bar-badge{ display:grid; place-items:center; width:34px; height:34px; border-radius:5px; background:#19c2b6; color:#04131a;
+  font:800 14px/1 var(--f-score); flex:none; }
+.bar-team b{ font:700 21px/1 var(--f-name); text-transform:uppercase; letter-spacing:1.1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+.bar-score{ align-items:baseline; gap:4px; font:900 62px/1 var(--f-score); letter-spacing:-1px; }
+.bar-score .sl{ color:var(--dim); font-weight:700; }
+.bar-ov{ margin-left:14px; display:flex; align-items:baseline; gap:6px; font:700 24px/1 var(--f-score); }
+.bar-ov small{ letter-spacing:1.6px; }
+
+.bar-bats{ flex-direction:column; align-items:stretch; justify-content:center; gap:0; }
+.bat{ display:flex; align-items:center; gap:10px; height:36px; }
+.bat + .bat{ border-top:1px solid var(--line); }
+.strike{ width:0; height:0; border:5px solid transparent; border-left:8px solid var(--six); border-right:0; flex:none;
+  opacity:0; transform:scale(.5); transition:opacity .25s ease, transform .3s cubic-bezier(.2,1.4,.3,1); }
+.bat.on-strike .strike{ opacity:1; transform:none; }
+.bat-name{ font:700 22px/1 var(--f-name); color:var(--mute); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:color .3s ease; }
+.bat.on-strike .bat-name{ color:var(--white); }
+.bat-runs{ margin-left:auto; font:800 26px/1 var(--f-score); }
+.bat.on-strike .bat-runs{ color:var(--six); }
+.bat-balls{ font:600 13px/1 var(--f-ui); color:var(--mute); }
+.bat-balls::before{ content:"(" } .bat-balls::after{ content:")" }
+
+.bar-over{ flex-direction:column; align-items:flex-start; justify-content:center; gap:7px; }
+.pills{ display:flex; gap:7px; }
+.pill{ width:42px; height:28px; border-radius:5px; display:grid; place-items:center;
+  background:rgb(255 255 255 / 8%); font:800 17px/1 var(--f-score); color:transparent; transition:background .3s ease, color .3s ease; }
+.pill.f0{ background:rgb(255 255 255 / 20%); color:var(--white); }
+.pill.f1,.pill.f2,.pill.f3{ background:var(--white); color:var(--k0); }
+.pill.f4{ background:var(--four); color:#032330; }
+.pill.f6{ background:var(--six); color:#2a1700; }
+.pill.fW{ background:var(--wkt); color:#fff; }
+.pill.land{ animation:pillLand .5s cubic-bezier(.2,1.5,.3,1) both; }
+@keyframes pillLand{ 0%{ transform:scale(.3); opacity:0 } 60%{ transform:scale(1.15); opacity:1 } 100%{ transform:none } }
+.pills.clear .pill{ animation:pillClear .3s cubic-bezier(.4,0,.9,.3) both; }
+.pills.clear .pill:nth-child(2){ animation-delay:.03s } .pills.clear .pill:nth-child(3){ animation-delay:.06s }
+.pills.clear .pill:nth-child(4){ animation-delay:.09s } .pills.clear .pill:nth-child(5){ animation-delay:.12s } .pills.clear .pill:nth-child(6){ animation-delay:.15s }
+@keyframes pillClear{ to{ transform:scale(.4); opacity:0 } }
+
+.bar-chase{ align-items:baseline; gap:9px; }
+.bar-chase b{ font:900 36px/1 var(--f-score); color:var(--six); }
+.bar-chase em{ font:600 14px/1 var(--f-ui); font-style:normal; color:var(--mute); }
+.bar-chase em span{ color:var(--white); font-weight:700; }
+
+/* ---------- odometer ------------------------------------------------------ */
+.odo{ display:inline-grid; height:1em; line-height:1; overflow:hidden; vertical-align:baseline; }
+.odo-v{ grid-area:1/1; display:block; line-height:1; }
+.odo-v.out{ animation:odoOut .46s cubic-bezier(.3,.7,.2,1) both; }
+.odo-v.in{ animation:odoIn .46s cubic-bezier(.2,.9,.2,1) both; }
+@keyframes odoOut{ to{ transform:translateY(-108%); opacity:0 } }
+@keyframes odoIn{ from{ transform:translateY(108%); opacity:0 } }
+
+/* ---------- reviewer rail ------------------------------------------------- */
+.rail{ position:fixed; right:18px; top:18px; z-index:60; width:212px; padding:12px; border-radius:10px;
+  background:rgb(7 9 13 / 92%); border:1px solid rgb(255 255 255 / 12%); box-shadow:0 18px 44px rgb(0 0 0 / 55%); color:#dfe7f5; }
+.rail[hidden], .rail-show[hidden]{ display:none; }
+.rail-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:9px; }
+.rail-head b{ font-size:13px; letter-spacing:1.4px; text-transform:uppercase; color:var(--mute); }
+.rail-head button{ border:1px solid rgb(255 255 255 / 20%); background:transparent; color:var(--mute); border-radius:6px; padding:3px 8px; font:600 12px/1 inherit; cursor:pointer; }
+.rail-head button:hover{ color:#fff; border-color:#fff; }
+.rail-grid{ display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.rail-grid button{ padding:9px 6px; border-radius:7px; cursor:pointer; border:1px solid rgb(255 255 255 / 14%);
+  background:rgb(255 255 255 / 5%); color:#e7eefb; font:700 13px/1 var(--f-ui); letter-spacing:.4px;
+  transition:background .16s ease, border-color .16s ease, transform .16s ease; }
+.rail-grid button:hover{ background:rgb(255 255 255 / 12%); border-color:rgb(255 255 255 / 32%); }
+.rail-grid button:active{ transform:translateY(1px); background:rgb(255 255 255 / 18%); }
+.rail-grid button:focus-visible{ outline:2px solid var(--four); outline-offset:2px; }
+.rail-grid [data-ev="four"]{ color:var(--four); } .rail-grid [data-ev="six"]{ color:var(--six); } .rail-grid [data-ev="wicket"]{ color:#ff8b97; }
+.rail-auto{ display:flex; align-items:center; gap:7px; margin-top:10px; font-size:13px; color:var(--mute); cursor:pointer; }
+.rail-show{ position:fixed; right:18px; top:18px; z-index:60; padding:8px 13px; border-radius:8px; cursor:pointer;
+  border:1px solid rgb(255 255 255 / 16%); background:rgb(7 9 13 / 88%); color:#cfdcf0; font:700 13px/1 var(--f-ui); letter-spacing:.5px; }
+.rail-show:hover{ color:#fff; border-color:#fff; }
+
+/* =============================================================================
+   Compact
+   ============================================================================= */
+@media (max-width:760px){
+  body.compact .stage{ transform:none !important; width:100%; height:100%; }
+  body.compact .bar{ left:0; right:0; bottom:0; height:auto; animation:none;
+    grid-template-columns:1fr 1fr; grid-template-areas:"team score" "bats bats" "over chase"; }
+  body.compact .bar > *{ padding:8px 12px; }
+  body.compact .bar > * + *::before{ display:none; }
+  body.compact .bar-team{ grid-area:team; } body.compact .bar-team b{ font-size:15px; }
+  body.compact .bar-badge{ width:26px; height:26px; font-size:11px; }
+  body.compact .bar-score{ grid-area:score; justify-content:flex-end; font-size:42px; }
+  body.compact .bar-ov{ font-size:16px; margin-left:8px; }
+  body.compact .bar-bats{ grid-area:bats; border-top:1px solid var(--line); }
+  body.compact .bat{ height:30px; } body.compact .bat-name{ font-size:16px; } body.compact .bat-runs{ font-size:19px; }
+  body.compact .bar-over{ grid-area:over; border-top:1px solid var(--line); }
+  body.compact .pill{ width:30px; height:22px; font-size:13px; }
+  body.compact .bar-chase{ grid-area:chase; border-top:1px solid var(--line); justify-content:flex-end; }
+  body.compact .bar-chase b{ font-size:26px; }
+
+  body.compact .wipe-word{ font-size:84px; letter-spacing:1px;
+    text-shadow:2px 2px 0 var(--d1), 4px 4px 0 var(--d2), 6px 6px 0 var(--d2), 6px 12px 4px rgb(0 0 0 / 45%); }
+  body.compact .rp-badge{ top:14px; left:14px; padding:8px 13px 8px 11px; gap:8px; }
+  body.compact .rp-badge b{ font-size:14px; letter-spacing:2.4px; } body.compact .rp-badge em{ font-size:12px; }
+  body.compact .rp-shot{ left:0; right:0; bottom:0; flex-wrap:wrap; gap:6px 14px; padding:12px 14px; }
+  body.compact .rp-shot-word{ font-size:40px; }
+  body.compact .rp-shot-copy b{ font-size:20px; } body.compact .rp-shot-copy em{ font-size:13px; }
+  body.compact .rp-shot-score{ font-size:17px; }
+
+  .rail{ right:8px; top:8px; width:168px; padding:9px; }
+  .rail-grid button{ padding:7px 4px; font-size:12px; }
+  .rail-show{ right:8px; top:8px; }
+}
+
+/* =============================================================================
+   Motion preferences — the replay still happens, it just cuts instead of wipes.
+   ============================================================================= */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{ animation-duration:.001ms !important; animation-delay:0s !important; transition-duration:.001ms !important; }
+  .rp-badge i{ animation:none; }
+  .wipe.on .wipe-fill{ animation:none !important; transform:none !important; opacity:1 !important; }
+  .wipe.on .wipe-word{ animation:none !important; opacity:1 !important; transform:none !important; }
+}

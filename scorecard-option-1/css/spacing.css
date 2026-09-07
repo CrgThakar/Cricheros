@@ -1,0 +1,477 @@
+/* Consistent space between primary numbers, captions and adjacent rows. */
+.leader-stat b { line-height: 1.2; }
+.leader-copy b { line-height: 1.4; }
+.leader-copy span, .leader-stat span { margin-top: 7px; line-height: 1.45; }
+.leader-row { padding-top: 13px; padding-bottom: 13px; column-gap: 12px; }
+.performance-caption, .official > span:not(.official-avatar) > span,
+.match-detail-item span, .commentary-copy small, .delivery-copy small,
+.over-summary-top span, .analysis-score small, .partnership-player small,
+.partnership-total small, .hero-person span:last-child, .hero-metric span,
+.mvp-team, .mvp-breakdown small, .mvp-list-player small,
+.timeline-event > span:not(.material-symbols-rounded), .squad-score { margin-top: 6px; line-height: 1.45; }
+.analysis-keyline b { margin-top: 8px; line-height: 1.3; }
+.hero-metric, .mvp-breakdown span { padding-top: 12px; padding-bottom: 12px; }
+.hero-metric b, .mvp-breakdown b { line-height: 1.2; }
+.timeline-event b { margin-top: 6px; line-height: 1.4; }
+.result-card .overs { line-height: 1.5; }
+.result-card .overs > span:not(:last-child)::after { content: ' · '; }
+.dark-pom .pom-player { margin-top: 6px; line-height: 1.35; }
+.result-card .result-meta .meta-sub { margin-top: 5px; line-height: 1.4; }
+.scorecard-panel .out { margin-top: 6px; line-height: 1.5; }
+@media (max-width: 767px) {
+  .timeline-event .material-symbols-rounded { top: 9px; }
+  .result-card .team-scores {
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+    align-items: stretch;
+  }
+  .result-card .team {
+    display: grid;
+    grid-template-rows: 44px auto 54px;
+    align-content: center;
+    justify-items: start;
+    row-gap: 8px;
+    min-height: 164px;
+    padding: 20px 16px;
+    text-align: left;
+  }
+  .result-card .team.away {
+    justify-items: end;
+    text-align: right;
+  }
+  .result-card .team-name {
+    display: flex;
+    align-items: flex-end;
+    min-height: 44px;
+    max-width: 100%;
+    margin: 0;
+    line-height: 1.28;
+  }
+  .result-card .away .team-name {
+    justify-content: flex-end;
+    text-align: right;
+  }
+  .result-card .total {
+    align-self: end;
+    justify-self: start;
+    line-height: .9;
+  }
+  .result-card .away .total {
+    justify-self: end;
+  }
+  .result-card .overs {
+    align-self: start;
+    margin-top: 0;
+    display: grid;
+    gap: 1px;
+    min-height: 54px;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+  .result-card .overs > span:not(:last-child)::after { content: none; }
+  .result-card .away .overs {
+    justify-self: end;
+    text-align: right;
+  }
+  .result-card .versus {
+    z-index: 2;
+  }
+  .card-head,
+  .summary-rich .card-head,
+  .commentary-section-head,
+  .analysis-head,
+  .heroes-head,
+  .mvp-head,
+  .gallery-head {
+    align-items: center;
+  }
+  .card-head .sub,
+  .summary-rich .card-head .sub {
+    line-height: 1.35;
+    text-align: right;
+  }
+  .leader-copy,
+  .leader-stat {
+    min-width: 0;
+  }
+  .leader-stat {
+    text-align: right;
+  }
+  .leader-row {
+    align-items: center;
+  }
+  .leader-row { padding-top: 13px; padding-bottom: 13px; }
+  .leader-copy span, .leader-stat span { margin-top: 6px; line-height: 1.45; }
+  .dark-pom { row-gap: 7px; }
+  .result-card .result-meta > div {
+    display: block;
+    align-items: center;
+    min-height: 48px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .result-card .result-meta > div > b {
+    display: contents;
+  }
+  .result-card .result-meta .with-icon {
+    display: grid;
+    grid-template-columns: 24px minmax(0,1fr);
+    align-items: center;
+    min-width: 0;
+    width: 100%;
+    min-height: 48px;
+    gap: 8px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  .result-card .result-meta .meta-copy {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    color: #d2dcda;
+    font-family: Ubuntu, Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    min-width: 0;
+    white-space: nowrap;
+  }
+  .result-card .result-meta .meta-sub {
+    color: #d2dcda;
+    font-family: Ubuntu, Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    margin-top: 0;
+    text-align: left;
+    white-space: nowrap;
+  }
+  .mobile-stat-grid dd { margin-top: 7px; line-height: 1.25; }
+  .mvp-list-row { row-gap: 12px; padding-top: 16px; padding-bottom: 16px; }
+  .mvp-list-row > span:nth-child(n+3):nth-child(-n+5)::before { margin-bottom: 5px; }
+  .mvp-star,
+  .mvp-list-row,
+  .squad li,
+  .recent-team,
+  .detail,
+  .analysis-list li,
+  .unavailable {
+    align-items: center;
+  }
+  .mvp-breakdown,
+  .mobile-stat-grid,
+  .hero-metrics {
+    align-items: stretch;
+  }
+  .mvp-breakdown span,
+  .mobile-stat-grid dd,
+  .hero-metric {
+    text-align: center;
+  }
+  .recent-team {
+    grid-template-columns: 30px minmax(0,1fr) auto;
+    gap: 10px;
+    min-height: 42px;
+  }
+  .recent-card-top,
+  .recent-result,
+  .recent-links {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .scorecard-panel .mobile-fit-table th,
+  .scorecard-panel .mobile-fit-table td {
+    vertical-align: middle;
+  }
+  .scorecard-panel .mobile-fit-table td:first-child {
+    vertical-align: top;
+  }
+  .mobile-fit-table .player-profile,
+  .chips .player-profile,
+  .mvp-list-player .player-profile,
+  .squad-player-copy .player-profile,
+  .leader-copy b,
+  .partnership-player strong {
+    color: var(--teal);
+    font: 700 14px/1.3 var(--font-ui);
+  }
+  h1 .title-status,
+  .venue-detail,
+  .dark-pom .pom-label,
+  .scorecard-panel .out,
+  .scroll-hint,
+  .mobile-stat-toggle,
+  .mobile-stat-grid dt,
+  .mvp-list-player small,
+  .analysis-tabs button,
+  .commentary-filters button,
+  .scorecard-panel .mobile-fit-table th {
+    font-size: 12px;
+  }
+  .leader-copy span,
+  .leader-stat span {
+    font-size: 13px;
+  }
+  .mobile-dock button {
+    font-size: 13px;
+  }
+  .result-card .team {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .result-card .versus {
+    font-size: 12px;
+  }
+  .analysis-over-head,
+  .analysis-score {
+    font-size: 12px;
+  }
+  .analysis-line-chart {
+    height: 268px;
+  }
+  .analysis-line-chart text {
+    font-size: 22px;
+    font-weight: 600;
+  }
+  .analysis-line-chart text[style*="font-weight"] {
+    font-size: 24px;
+    font-weight: 700;
+    paint-order: stroke;
+    stroke: #fff;
+    stroke-linejoin: round;
+    stroke-width: 3px;
+  }
+  .partnership-key,
+  .partnership-team-head span,
+  .analysis-score small,
+  .mvp-breakdown small,
+  .squad-player-tag,
+  #teams .role,
+  .gallery-caption span {
+    font-size: 12px;
+  }
+  .partnership-item::before {
+    font-size: 11px;
+  }
+  .partnership-player small,
+  .partnership-total small {
+    font-size: 13px;
+    line-height: 1.35;
+  }
+  .partnership-total {
+    font-size: 16px;
+    line-height: 1.25;
+  }
+  .partnership-split {
+    height: 7px;
+    margin-top: 10px;
+  }
+  .shot-filter select {
+    font-size: 14px;
+    min-height: 48px;
+    padding-left: 12px;
+    padding-right: 36px;
+  }
+  .shot-filters {
+    gap: 12px;
+  }
+  .shot-filter {
+    gap: 7px;
+    font-size: 16px;
+  }
+  .analysis-tabs button,
+  .commentary-filters button,
+  .scorecard-team-tabs button,
+  .innings-switch button,
+  .team-radio span,
+  .mobile-dock button,
+  .mobile-menu-grid button {
+    font-size: 13px;
+    line-height: 1.2;
+  }
+  .shot-filter select[hidden] {
+    display: none;
+  }
+  .shot-picker {
+    position: relative;
+    min-width: 0;
+  }
+  .shot-picker summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 48px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #f7f9f8;
+    color: var(--ink);
+    cursor: pointer;
+    font: 600 14px/1.2 var(--font-ui);
+    list-style: none;
+  }
+  .shot-picker summary::-webkit-details-marker { display: none; }
+  .shot-picker summary::after {
+    content: 'expand_more';
+    margin-left: 8px;
+    color: var(--ink);
+    font-family: 'Material Symbols Rounded';
+    font-size: 24px;
+    line-height: 1;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .shot-picker[open] summary {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 2px rgb(24 149 143 / 18%);
+  }
+  .shot-picker[open] summary::after { transform: rotate(180deg); }
+  .shot-picker-options {
+    position: absolute;
+    z-index: 10;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 5px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 10px 24px rgb(20 40 30 / 16%);
+  }
+  .shot-picker-options button {
+    display: block;
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--ink);
+    font: 600 14px/1.25 var(--font-ui);
+    text-align: left;
+  }
+  .shot-picker-options button.selected,
+  .shot-picker-options button:hover {
+    background: var(--teal-pale);
+    color: #10746e;
+  }
+  .shot-picker.is-disabled summary {
+    color: #94a09c;
+    background: #f1f4f3;
+    cursor: not-allowed;
+  }
+  .shot-picker.is-disabled summary::after { display: none; }
+  .shot-picker.is-disabled .shot-picker-options { display: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Responsive corrections
+   Fixes found while testing 320-1440px: the main navigation used to disappear
+   between the phone drawer (767px) and the desktop bar (1180px); the result
+   meta strip could not shrink; the dock labels collided on 320px screens.
+   --------------------------------------------------------------------------- */
+
+/* The drawer trigger now covers the whole range where .global-nav is hidden,
+   so the site navigation is reachable on tablets and narrow desktop windows. */
+@media (max-width: 1180px) {
+  .mobile-site-toggle {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    border: 0;
+    background: transparent;
+    color: var(--charcoal);
+  }
+}
+
+/* Between the phone layout and the full desktop bar the hero meta strip keeps
+   its three columns but is allowed to wrap, instead of overlapping and
+   clipping the closing time. */
+@media (min-width: 768px) and (max-width: 1180px) {
+  .result-card .result-meta .meta-copy,
+  .result-card .result-meta b,
+  .result-card .result-meta > div > span {
+    white-space: normal;
+  }
+  .result-card .result-meta > div {
+    align-items: center;
+  }
+}
+
+/* Smallest phones: keep the four dock labels inside their own buttons. */
+@media (max-width: 360px) {
+  .mobile-dock button,
+  .mobile-dock button span:not(.material-symbols-rounded) {
+    font-size: 10px;
+    letter-spacing: -.1px;
+  }
+  .mobile-dock button span:not(.material-symbols-rounded) {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Pressed states
+   Hover lifts a control and tints it teal; pressing settles it back down and
+   deepens the tone. Touch devices never fire hover, so without this a tap gives
+   no confirmation at all - the state that matters most on a phone.
+   --------------------------------------------------------------------------- */
+.match-nav button:active { transform: translateY(0); }
+.match-nav button:active .material-symbols-rounded { transform: scale(1); }
+
+.icon:active,
+.sign-in:active,
+.search:active,
+.scorecard-download:active,
+.analysis-download:active,
+.mvp-export:active,
+.gallery-watch:active {
+  transform: translateY(1px);
+  background: #eef3f1;
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.gallery-upload:active {
+  transform: translateY(1px);
+  background: #0e6b66;
+  border-color: #0e6b66;
+}
+
+.analysis-tabs button:active,
+.commentary-filters button:active,
+.scorecard-team-tabs button:active,
+.innings-switch button:active,
+.mobile-stat-toggle:active,
+.mobile-stream-toggle:active,
+.mobile-dock button:active,
+.mobile-menu-grid button:active {
+  background: #dfeeea;
+  color: #0e6b66;
+}
+
+.gallery-item:active img { transform: scale(1.01); }
+.gallery-lightbox button:active { background: rgb(255 255 255 / 28%); }
+.player-profile:active { color: #0b625e; }
+.recent-links a:active { color: #0b625e; }
+
+/* ---------------------------------------------------------------------------
+   Line length
+   Scorer notes and match-analysis copy are the only real prose on the page and
+   ran to ~118 characters per line on a wide desktop. Capping the measure keeps
+   them in the comfortable 60-80 range without narrowing their cards.
+   --------------------------------------------------------------------------- */
+.summary-notes .note-row,
+.analysis-list li > div span,
+.gallery-head p {
+  max-width: 68ch;
+}
+.summary-notes.scorer-note .note-row > span:not(.material-symbols-rounded) {
+  max-width: 68ch;
+}

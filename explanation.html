@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CricHeroes design notes</title>
+<style>
+  :root{--bg:#0f1417;--card:#171d21;--line:#252d33;--ink:#eef2f4;--mute:#9aa7ae;--teal:#12b3a6}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:760px;margin:0 auto;padding:48px 24px 80px}
+  a{color:var(--teal)}
+  .back{display:inline-block;font-size:13px;letter-spacing:.06em;text-transform:uppercase;
+        text-decoration:none;color:var(--mute);margin-bottom:28px}
+  .back:hover{color:var(--teal)}
+  h1{margin:0 0 10px;font-size:30px;line-height:1.2;letter-spacing:-.02em}
+  .lede{margin:0 0 40px;color:var(--mute);font-size:17px}
+  h2{font-size:21px;margin:48px 0 4px;padding-top:26px;border-top:1px solid var(--line);letter-spacing:-.01em}
+  h3{font-size:16px;margin:36px 0 4px;color:var(--teal)}
+  .sub{margin:0 0 14px;color:var(--mute);font-size:15px}
+  ul{margin:0 0 18px;padding-left:0;list-style:none}
+  li{position:relative;padding-left:20px;margin-bottom:10px;color:#dbe3e7}
+  li::before{content:"";position:absolute;left:0;top:11px;width:7px;height:1.5px;background:var(--teal)}
+  code{background:#0b0f11;border:1px solid var(--line);border-radius:4px;padding:1px 5px;
+       font:13px/1 ui-monospace,SFMono-Regular,Consolas,monospace;color:#c9d4d9}
+  .table-scroll{overflow-x:auto;margin:18px 0 8px;border:1px solid var(--line);border-radius:10px}
+  table{border-collapse:collapse;width:100%;min-width:680px;font-size:13.5px}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{background:var(--card);color:var(--ink);font-size:12px;letter-spacing:.04em}
+  tbody th{color:var(--mute);font-weight:500;white-space:nowrap;width:1%}
+  tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
+  td{color:#dbe3e7}
+  @media(max-width:520px){.wrap{padding:32px 18px 60px}h1{font-size:25px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<a class="back" href="index.html">&larr; All options</a>
+
+<h1>CricHeroes design notes</h1>
+<p class="lede">Two assignments: a rebuilt match summary, and a live score ticker for streamers.</p>
+
+<h2>Assignment 1: match summary</h2>
+<p class="sub">People open a finished match to answer one question. The page answers it before anything else.</p>
+<ul>
+  <li>The question is who won, so the result is the first thing on the page. The recent matches rail moved below the match content because four other scorelines sitting above the hero were competing with the answer the reader came for.</li>
+  <li>A match carries far more than a result: scorecard, commentary, analysis, awards, teams, photos. Stacking all of it makes a page nobody finishes, so eight views sit under one tab bar and the reader chooses how deep to go.</li>
+  <li>Nothing is taken away on a phone, only deferred. The three numbers people actually scan stay visible and the rest opens per player on request. The photo gallery follows the same rule and does not load until someone asks for it.</li>
+</ul>
+
+<h2>Assignment 2: live score ticker</h2>
+<p class="sub">Four answers to one question: how much of a streamer's frame is a score worth?</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th></th><th>1. Broadcast bar</th><th>2. Corner card</th><th>3. Baseline strip</th><th>4. Replay wall</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">Takes up</th><td>Bottom quarter</td><td>Bottom-left corner</td><td>A thin band</td><td>Nothing, then everything</td></tr>
+    <tr><th scope="row">Idea</th><td>Everything visible, always</td><td>Quiet at rest, opens on events</td><td>The band itself becomes the event</td><td>The event triggers a replay</td></tr>
+    <tr><th scope="row">Trade</th><td>Costs the most screen</td><td>Score is smaller</td><td>Less room for detail</td><td>Owns the frame for a few seconds</td></tr>
+    <tr><th scope="row">Best for</th><td>Streams where the match is the show</td><td>Streamers who need the frame</td><td>Full-screen video</td><td>Highlight-led streams</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Option 1: broadcast bar</h3>
+<p class="sub">For streams where the match is the whole show.</p>
+<ul>
+  <li>Everything a viewer might ask for sits on screen at once, so nobody waits for a rotation to find the chase. It costs the bottom quarter of the frame, and that is the trade being made.</li>
+  <li>Someone joining mid over needs the score before the context, so the score is the largest element by a wide margin and the chase maths sits in a band beneath it.</li>
+  <li>I checked it against a bright, busy frame rather than the dark stadium mock. Translucent panels looked better in the mock and lost contrast over real footage, so every panel is solid.</li>
+</ul>
+
+<h3>Option 2: corner card</h3>
+<p class="sub">For streamers who need the frame for something other than the score.</p>
+<ul>
+  <li>A full-width bar takes space most streamers have already promised to a facecam or their own overlays. This holds about a fifth of the frame and gives the rest back.</li>
+  <li>It stays quiet between events and opens only when something happens, so the score is always available without demanding attention every ball.</li>
+  <li>One accent colour carries all the meaning: who is on strike, which ball is current, and the numbers that decide the chase. Everything else stays white so the accent never lies.</li>
+</ul>
+
+<h3>Option 3: baseline strip</h3>
+<p class="sub">For full-screen video where nothing should sit on top of the picture.</p>
+<ul>
+  <li>A corner graphic still collides with whatever the streamer put there first. Running the full width removes the question of which corner happens to be free.</li>
+  <li>It occupies a band rather than a block, so the picture above it stays whole and the score never overlaps the action.</li>
+  <li>When a boundary or wicket lands, the strip becomes the celebration instead of covering the play. It grows, floods with the event colour, then hands the scorecard back.</li>
+</ul>
+
+<h3>Option 4: replay wall</h3>
+<p class="sub">For highlight-led streams that can afford a moment when something big happens.</p>
+<ul>
+  <li>The other three answer a six with a graphic. Television answers it with a replay, so this option triggers the replay instead of drawing over the action.</li>
+  <li>The switch between the live feed and the replay is hidden inside a full-screen wipe, so a viewer sees the word land and never notices the cut.</li>
+  <li>It owns the whole frame for about five seconds, which is the most expensive thing any of these options do. It only spends that on a four, six or wicket.</li>
+</ul>
+
+<h2>Notes for review</h2>
+<ul>
+  <li>Every ticker has an event panel top-right. Fire a four, six or wicket yourself, or tick "Auto-play demo" to watch a passage of play. Press <code>H</code> for a clean overlay.</li>
+  <li>Run rates update from the live match rather than being typed in, so the numbers stay honest as the match moves.</li>
+  <li>All four run on the same match model, so a direction can be chosen and taken further without rebuilding the logic underneath it.</li>
+</ul>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Replay Wall — Live Ticker</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="viewport">
+  <div class="stage" id="stage">
+
+    <!-- Two feeds. Live runs continuously; the replay feed is the same match at
+         a different point, revealed only under cover of the wipe. -->
+    <div class="feed live" id="feedLive">
+    </div>
+    <div class="feed replay" id="feedReplay">
+      <span class="scanlines" aria-hidden="true"></span>
+    </div>
+
+    <!-- Replay furniture -->
+    <div class="rp-badge" id="rpBadge" aria-hidden="true">
+      <i></i><b>Replay</b><em id="rpKind">Six</em>
+    </div>
+    <div class="rp-shot" id="rpShot" aria-hidden="true">
+      <span class="rp-shot-word" id="rpShotWord">SIX</span>
+      <span class="rp-shot-copy">
+        <b id="rpName">Mayur Vasyani</b>
+        <em id="rpSub">Over long-on · 29 (42)</em>
+      </span>
+      <span class="rp-shot-score" id="rpScore">135/5 · 23.3</span>
+    </div>
+
+    <!-- Full-screen wipe: covers the cut between feeds -->
+    <div class="wipe" id="wipe" aria-hidden="true">
+      <span class="wipe-fill"></span>
+      <span class="wipe-word" id="wipeWord">SIX</span>
+    </div>
+
+    <!-- Live score bar -->
+    <div class="bar" id="bar">
+      <div class="bar-team"><span class="bar-badge">CC</span><b id="teamName">Champions CC</b></div>
+      <div class="bar-score">
+        <span class="odo" id="runs"><span class="odo-v">129</span></span><span class="sl">/</span><span class="odo" id="wkts"><span class="odo-v">5</span></span>
+        <span class="bar-ov"><span class="odo" id="overs"><span class="odo-v">23.2</span></span><small>ov</small></span>
+      </div>
+      <div class="bar-bats">
+        <span class="bat" id="bat0"><i class="strike"></i><b class="bat-name">Mayur Vasyani</b><span class="odo bat-runs"><span class="odo-v">23</span></span><small class="bat-balls">41</small></span>
+        <span class="bat" id="bat1"><i class="strike"></i><b class="bat-name">Vinay Vasyani</b><span class="odo bat-runs"><span class="odo-v">47</span></span><small class="bat-balls">36</small></span>
+      </div>
+      <div class="bar-over"><small>This over</small><span class="pills" id="pills"></span></div>
+      <div class="bar-chase"><small>Need</small><b id="need">100</b><em>off <span id="left">160</span></em></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="rail" id="rail">
+  <div class="rail-head"><b>Match events</b><button type="button" id="railHide" title="Hide controls (H)">Hide</button></div>
+  <div class="rail-grid">
+    <button type="button" data-ev="dot">Dot ball</button>
+    <button type="button" data-ev="run1">Single</button>
+    <button type="button" data-ev="run2">Two</button>
+    <button type="button" data-ev="four">FOUR</button>
+    <button type="button" data-ev="six">SIX</button>
+    <button type="button" data-ev="wicket">WICKET</button>
+    <button type="button" data-ev="over">End of over</button>
+    <button type="button" data-ev="reset">Reset</button>
+  </div>
+  <label class="rail-auto"><input type="checkbox" id="autoPlay"> Auto-play demo</label>
+</div>
+<button type="button" class="rail-show" id="railShow" title="Show controls (H)">Controls</button>
+
+<script src="js/script.js"></script>
+</body>
+</html>

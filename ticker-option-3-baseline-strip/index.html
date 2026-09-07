@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baseline Strip — Live Ticker</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="viewport">
+  <div class="stage" id="stage">
+    <!-- Demo backdrop only. In OBS this is the stream. -->
+    <div class="backdrop">
+    </div>
+
+    <!-- The strip -->
+    <div class="strip" id="strip">
+      <div class="mod team">
+        <span class="team-bar"></span>
+        <span class="badge">CC</span>
+        <span class="team-text"><b id="teamName">Champions CC</b><small>2nd innings · chasing 229</small></span>
+      </div>
+
+      <div class="mod score">
+        <span class="score-row">
+          <span class="odo runs" id="runs"><span class="odo-v">129</span></span><span class="slash">/</span><span class="odo wkts" id="wkts"><span class="odo-v">5</span></span>
+        </span>
+        <span class="overs-row"><span class="odo" id="overs"><span class="odo-v">23.2</span></span><small>overs</small></span>
+      </div>
+
+      <div class="mod bats">
+        <div class="bat" id="bat0">
+          <i class="strike"></i><span class="bat-name">Mayur Vasyani</span>
+          <span class="bat-figs"><span class="odo bat-runs"><span class="odo-v">23</span></span><small class="bat-balls">41</small></span>
+        </div>
+        <div class="bat" id="bat1">
+          <i class="strike"></i><span class="bat-name">Vinay Vasyani</span>
+          <span class="bat-figs"><span class="odo bat-runs"><span class="odo-v">47</span></span><small class="bat-balls">36</small></span>
+        </div>
+      </div>
+
+      <div class="mod bowl">
+        <small class="lab">Bowler</small>
+        <span class="bowl-name" id="bowlName">Abhay Tomar</span>
+        <span class="bowl-figs"><b id="bowlFigs">32-0</b><small id="bowlOv">5.2</small></span>
+      </div>
+
+      <div class="mod over">
+        <small class="lab">This over</small>
+        <span class="pills" id="pills"></span>
+      </div>
+
+      <div class="mod chase">
+        <span class="chase-need"><small class="lab">Need</small><b id="need">100</b><em>off <span id="left">160</span></em></span>
+        <span class="chase-rates"><span><small class="lab">CRR</small><b id="crr">5.53</b></span><span><small class="lab">RRR</small><b id="rrr">3.75</b></span></span>
+      </div>
+
+      <!-- Takeover: the strip floods with the event colour and the word lands
+           in its centre, then the detail modules come back. -->
+      <div class="takeover" id="takeover" aria-live="polite">
+        <span class="to-marquee" aria-hidden="true"><span class="to-track" id="toTrack"></span></span>
+        <span class="to-word" id="toWord">SIX</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="rail" id="rail">
+  <div class="rail-head"><b>Match events</b><button type="button" id="railHide" title="Hide controls (H)">Hide</button></div>
+  <div class="rail-grid">
+    <button type="button" data-ev="dot">Dot ball</button>
+    <button type="button" data-ev="run1">Single</button>
+    <button type="button" data-ev="run2">Two</button>
+    <button type="button" data-ev="four">FOUR</button>
+    <button type="button" data-ev="six">SIX</button>
+    <button type="button" data-ev="wicket">WICKET</button>
+    <button type="button" data-ev="over">End of over</button>
+    <button type="button" data-ev="reset">Reset</button>
+  </div>
+  <label class="rail-auto"><input type="checkbox" id="autoPlay"> Auto-play demo</label>
+</div>
+<button type="button" class="rail-show" id="railShow" title="Show controls (H)">Controls</button>
+
+<script src="js/script.js"></script>
+</body>
+</html>

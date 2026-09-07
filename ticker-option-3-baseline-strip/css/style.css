@@ -1,0 +1,312 @@
+/* =============================================================================
+   Baseline Strip — live cricket ticker, option 3
+   A single full-width band along the bottom edge. Nothing is anchored to a
+   side, so the stream above it is never partially covered; the band stays thin
+   (92px at 1080p) and only the score module stands taller, as a tab. Events take
+   centre screen as a scorecard ticket rather than expanding the strip. Cool
+   broadcast palette: charcoal, white, one cyan accent.
+   ============================================================================= */
+
+:root{
+  --c0:#0b0e13; --c1:#111620; --c2:#18202b;
+  --line:rgb(255 255 255 / 10%);
+  --white:#f7f9fb; --mute:#9aa5b1; --dim:#66717d;
+  --cyan:#38d6ff; --team:#19c2b6;
+  --four:#38d6ff; --six:#ffc233; --wkt:#ff3b4c; --fifty:#7dff9e;
+  --f-score:'Saira Condensed', 'Arial Narrow', sans-serif;
+  --f-name:'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --f-ui:'Barlow Semi Condensed', system-ui, sans-serif;
+  --pad:40px; --h:92px; --tab:34px;   /* how far the score tab stands above the strip */
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+html,body{ height:100%; }
+body{ background:#000; color:var(--white); overflow:hidden; font-family:var(--f-ui); }
+.viewport{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:#000; }
+.stage{ position:relative; width:1920px; height:1080px; flex:none; transform-origin:center; overflow:hidden; }
+
+/* Demo backdrop: real match footage, so the overlay is judged against video
+   rather than a flat mock. In OBS this layer is the stream itself. The gradient
+   stays underneath as a fallback if the embed is blocked. */
+.backdrop{ position:absolute; inset:0; overflow:hidden;
+  background:#06080b url("../assets/stream-frame.webp") center/cover no-repeat; }
+/* Slight foot scrim so the band always separates from a bright frame. */
+.backdrop::after{ content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(180deg, transparent 55%, rgb(0 0 0 / 45%) 100%); }
+
+/* ---------- strip --------------------------------------------------------- */
+.strip{
+  position:absolute; left:var(--pad); right:var(--pad); bottom:var(--pad); height:var(--h); z-index:2;
+  display:grid; grid-template-columns:230px 300px 1fr 240px 350px 300px; align-items:stretch;
+  background:linear-gradient(180deg, var(--c2), var(--c1) 60%, var(--c0));
+  box-shadow:0 22px 50px rgb(0 0 0 / 55%), inset 0 1px 0 rgb(255 255 255 / 8%);
+  animation:stripIn .7s .1s cubic-bezier(.2,.9,.2,1) both;
+}
+@keyframes stripIn{ from{ opacity:0; transform:translateY(40px) } to{ opacity:1; transform:none } }
+.mod{ position:relative; display:flex; align-items:center; padding:0 22px; min-width:0; }
+.mod + .mod::before{ content:""; position:absolute; left:0; top:14px; bottom:14px; width:1px; background:var(--line); }
+.lab{ font:600 11px/1 var(--f-ui); letter-spacing:2.2px; text-transform:uppercase; color:var(--dim); }
+
+/* team */
+.team{ gap:14px; padding-left:26px; }
+.team-bar{ position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--team); }
+.badge{ display:grid; place-items:center; width:38px; height:38px; border-radius:6px; background:var(--team); color:#04131a;
+  font:800 15px/1 var(--f-score); letter-spacing:.5px; flex:none; }
+.team-text{ display:flex; flex-direction:column; gap:5px; min-width:0; }
+.team-text b{ font:700 22px/1 var(--f-name); text-transform:uppercase; letter-spacing:1.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.team-text small{ font:500 13px/1 var(--f-ui); color:var(--mute); letter-spacing:.3px; white-space:nowrap; }
+
+/* score tab — stands 34px taller than the strip */
+.score{ flex-direction:column; align-items:flex-start; justify-content:center; gap:2px;
+  margin-top:calc(-1 * var(--tab)); height:calc(var(--h) + var(--tab)); padding:0 26px;
+  background:linear-gradient(180deg, #1c2532, var(--c1) 70%, var(--c0)); }
+.score::before{ display:none; }
+.score::after{ content:""; position:absolute; left:0; right:0; top:0; height:3px; background:var(--cyan); box-shadow:0 0 14px var(--cyan); }
+.score-row{ display:flex; align-items:baseline; font:900 74px/1 var(--f-score); letter-spacing:-1px; }
+.score-row .slash{ color:var(--dim); font-weight:700; margin:0 2px; }
+.overs-row{ display:flex; align-items:baseline; gap:7px; font:700 24px/1 var(--f-score); color:var(--white); }
+.overs-row small{ font:600 12px/1 var(--f-ui); letter-spacing:2px; text-transform:uppercase; color:var(--mute); }
+
+/* batters */
+.bats{ flex-direction:column; align-items:stretch; justify-content:center; gap:0; padding:0 22px; }
+.bat{ display:flex; align-items:center; gap:10px; height:38px; }
+.bat + .bat{ border-top:1px solid var(--line); }
+.strike{ width:0; height:0; border:5px solid transparent; border-left:8px solid var(--cyan); border-right:0; flex:none;
+  opacity:0; transform:translateX(-5px) scale(.6); transition:opacity .25s ease, transform .3s cubic-bezier(.2,1.4,.3,1); }
+.bat.on-strike .strike{ opacity:1; transform:none; }
+.bat-name{ font:700 24px/1 var(--f-name); color:var(--mute); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:color .3s ease; }
+.bat.on-strike .bat-name{ color:var(--white); }
+.bat-figs{ margin-left:auto; display:flex; align-items:baseline; gap:7px; }
+.bat-runs{ font:800 28px/1 var(--f-score); color:var(--white); }
+.bat.on-strike .bat-runs{ color:var(--cyan); }
+.bat-balls{ font:600 14px/1 var(--f-ui); color:var(--mute); }
+.bat-balls::before{ content:"("; } .bat-balls::after{ content:")"; }
+
+/* bowler */
+.bowl{ flex-direction:column; align-items:flex-start; justify-content:center; gap:5px; }
+.bowl-name{ font:700 24px/1 var(--f-name); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
+.bowl-figs{ display:flex; align-items:baseline; gap:8px; }
+.bowl-figs b{ font:800 26px/1 var(--f-score); }
+.bowl-figs small{ font:600 14px/1 var(--f-ui); color:var(--mute); }
+.bowl-figs small::before{ content:"("; } .bowl-figs small::after{ content:")"; }
+
+/* this over — pills sized to carry a numeral at a glance */
+.over{ flex-direction:column; align-items:flex-start; justify-content:center; gap:8px; }
+.pills{ display:flex; gap:8px; }
+.pill{ width:44px; height:30px; border-radius:6px; display:grid; place-items:center;
+  background:rgb(255 255 255 / 8%); font:800 18px/1 var(--f-score); color:transparent; transition:background .3s ease, color .3s ease; }
+.pill.f0{ background:rgb(255 255 255 / 20%); color:var(--white); }
+.pill.f1, .pill.f2, .pill.f3{ background:var(--white); color:var(--c0); }
+.pill.f4{ background:var(--four); color:#032330; }
+.pill.f6{ background:var(--six); color:#2a1700; }
+.pill.fW{ background:var(--wkt); color:#fff; }
+.pill.land{ animation:pillLand .5s cubic-bezier(.2,1.5,.3,1) both; }
+@keyframes pillLand{ 0%{ transform:scale(.3); opacity:0 } 60%{ transform:scale(1.15); opacity:1 } 100%{ transform:none } }
+.pills.clear .pill{ animation:pillClear .32s cubic-bezier(.4,0,.9,.3) both; }
+.pills.clear .pill:nth-child(2){ animation-delay:.03s } .pills.clear .pill:nth-child(3){ animation-delay:.06s }
+.pills.clear .pill:nth-child(4){ animation-delay:.09s } .pills.clear .pill:nth-child(5){ animation-delay:.12s } .pills.clear .pill:nth-child(6){ animation-delay:.15s }
+@keyframes pillClear{ to{ transform:scale(.4); opacity:0 } }
+
+/* chase */
+.chase{ flex-direction:column; align-items:flex-start; justify-content:center; gap:6px; }
+.chase-need{ display:flex; align-items:baseline; gap:9px; }
+.chase-need b{ font:900 38px/1 var(--f-score); color:var(--cyan); }
+.chase-need em{ font:600 15px/1 var(--f-ui); font-style:normal; color:var(--mute); letter-spacing:.3px; }
+.chase-need em span{ color:var(--white); font-weight:700; }
+.chase-rates{ display:flex; gap:22px; }
+.chase-rates span{ display:flex; align-items:baseline; gap:7px; }
+.chase-rates b{ font:800 20px/1 var(--f-score); }
+
+/* ---------- odometer ------------------------------------------------------ */
+.odo{ display:inline-grid; height:1em; line-height:1; overflow:hidden; vertical-align:baseline; }
+.odo-v{ grid-area:1/1; display:block; line-height:1; }
+.odo-v.out{ animation:odoOut .46s cubic-bezier(.3,.7,.2,1) both; }
+.odo-v.in { animation:odoIn  .46s cubic-bezier(.2,.9,.2,1) both; }
+@keyframes odoOut{ to{ transform:translateY(-108%); opacity:0 } }
+@keyframes odoIn { from{ transform:translateY(108%); opacity:0 } }
+
+/* ---------- strip reactions ----------------------------------------------- */
+/* Reactions animate .strip; the entrance is on .strip too but only plays once,
+   before any reaction can be triggered, so a later name change cannot replay
+   it - the reaction classes are added on top and removed, and stripIn is
+   already finished with fill:both holding its end state. To be safe the
+   reactions target the score tab and a wash layer instead of .strip itself. */
+.strip.kick .score{ animation:kick .5s cubic-bezier(.2,1.4,.3,1) both; }
+@keyframes kick{ 35%{ transform:translateY(-6px) } }
+.strip.slam .score{ animation:slam .7s cubic-bezier(.25,1,.3,1) both; }
+@keyframes slam{ 15%{ transform:translateY(8px) scale(.97) } 45%{ transform:translateY(-3px) } }
+.strip::after{ content:""; position:absolute; inset:0; pointer-events:none; opacity:0; background:var(--wash, transparent); }
+.strip.wash-four{ --wash:linear-gradient(90deg, rgb(56 214 255 / 35%), transparent 60%); }
+.strip.wash-six{ --wash:linear-gradient(90deg, rgb(255 194 51 / 38%), transparent 60%); }
+.strip.wash-wicket{ --wash:linear-gradient(90deg, rgb(255 59 76 / 55%), rgb(255 59 76 / 15%)); }
+.strip.wash-four::after, .strip.wash-six::after, .strip.wash-wicket::after{ animation:wash .9s ease-out both; }
+@keyframes wash{ 0%{ opacity:0 } 14%{ opacity:1 } 100%{ opacity:0 } }
+.strip.flare .score-row{ animation:flare .6s ease both; }
+@keyframes flare{ 30%{ text-shadow:0 0 26px var(--ev, var(--cyan)) } }
+.strip.ev-four{ --ev:var(--four); } .strip.ev-six{ --ev:var(--six); } .strip.ev-wicket{ --ev:var(--wkt); }
+
+.bat.out{ animation:batOut .4s cubic-bezier(.4,0,.9,.3) both; }
+.bat.in { animation:batIn .55s .1s cubic-bezier(.2,.9,.2,1) both; }
+@keyframes batOut{ to{ transform:translateX(-24px); opacity:0 } }
+@keyframes batIn{ from{ transform:translateX(24px); opacity:0 } }
+
+/* ---------- strip takeover ------------------------------------------------
+   On a boundary or a wicket the strip stops being a scoreboard for a beat: it
+   grows, floods with the event colour, the six detail modules clear away and
+   the word lands dead centre of the band. Then the details come back. The whole
+   moment stays at the bottom of the frame, so a full-screen stream is never
+   covered in the middle.
+   ------------------------------------------------------------------------- */
+/* No overflow:hidden here - the score tab protrudes above the strip by a
+   negative margin and clipping the strip would cut it off. The takeover layer
+   is inset:0 so it never needs the strip to clip. */
+.strip{ transition:height .42s cubic-bezier(.2,.9,.2,1), background .42s ease; }
+.takeover{ overflow:hidden; }
+/* The scorecard leaves and returns as a staggered wipe rather than a crossfade:
+   modules drop out left to right, and come back right to left once the band has
+   started shrinking. Explicit classes rather than :nth-child, because .takeover
+   is a sibling of the six modules. */
+.mod{
+  transition:opacity .22s ease, transform .3s cubic-bezier(.2,.9,.2,1);
+  transition-delay:.16s;            /* IN: wait for the band to start shrinking */
+}
+/* Coming back, the score returns first and the rest follow outward. */
+.score{ transition-delay:.16s } .team{ transition-delay:.21s } .bats{ transition-delay:.25s }
+.bowl{ transition-delay:.29s } .over{ transition-delay:.33s } .chase{ transition-delay:.37s }
+
+.strip.taken .mod{ opacity:0; transform:translateY(16px); transition-delay:0s; }
+.strip.taken .team{ transition-delay:0s }    .strip.taken .score{ transition-delay:.04s }
+.strip.taken .bats{ transition-delay:.07s }  .strip.taken .bowl{ transition-delay:.10s }
+.strip.taken .over{ transition-delay:.13s }  .strip.taken .chase{ transition-delay:.16s }
+
+.takeover{
+  position:absolute; inset:0; z-index:4; display:grid; place-items:center;
+  pointer-events:none; opacity:0; visibility:hidden;
+  transition:opacity .2s ease, visibility 0s .2s;
+}
+/* Background marquee: the same word repeating across the whole band, drifting
+   right to left. Outlined rather than filled so it reads as texture at both
+   ends of the gradient - solid text would vanish into the dark end and fight
+   the centre word at the bright end. */
+.to-marquee{
+  position:absolute; inset:0; display:flex; align-items:center; overflow:hidden;
+  opacity:0; transition:opacity .3s ease;
+  -webkit-mask-image:linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  mask-image:linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+.to-track{ display:flex; flex:none; white-space:nowrap; will-change:transform; }
+.to-track span{
+  padding:0 26px;
+  font:900 66px/1 var(--f-score); letter-spacing:6px; text-transform:uppercase;
+  color:transparent; -webkit-text-stroke:2px rgb(255 255 255 / 26%);
+}
+.strip.taken .to-marquee{ opacity:1; }
+/* The track holds two identical halves, so a -50% shift lands on the same
+   frame and the loop is seamless. */
+.strip.taken .to-track{ animation:marquee 11s linear infinite; }
+@keyframes marquee{ from{ transform:translateX(0) } to{ transform:translateX(-50%) } }
+
+/* Keep the centre word clear of the texture behind it. */
+.takeover::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(38% 120% at 50% 50%, rgb(0 0 0 / 34%), transparent 70%);
+  opacity:0; transition:opacity .3s ease;
+}
+.strip.taken .takeover::after{ opacity:1; }
+
+.to-word{
+  position:relative; z-index:1;
+  font:900 92px/1 var(--f-score); letter-spacing:3px; text-transform:uppercase;
+  color:#fff; -webkit-text-stroke:1px rgb(255 255 255 / 30%);
+  text-shadow:
+    1px 1px 0 var(--td1), 2px 2px 0 var(--td1), 3px 3px 0 var(--td1),
+    4px 4px 0 var(--td2), 5px 5px 0 var(--td2), 6px 6px 0 var(--td2), 7px 7px 0 var(--td2), 8px 8px 0 var(--td2),
+    10px 14px 5px rgb(0 0 0 / 45%);
+  opacity:0; transform:translateY(24px) scale(.82) rotateX(30deg);
+}
+
+/* the strip while taken over */
+.strip.taken{ height:150px; }
+.strip.taken .takeover{ opacity:1; visibility:visible; transition:opacity .26s .18s ease; }
+/* Resting state of the taken word is visible; the animation only adds the
+   entrance. If it never runs, the word is still there rather than invisible. */
+.strip.taken .to-word{ opacity:1; transform:none; animation:toWord .6s .1s cubic-bezier(.16,1.15,.3,1) both; }
+@keyframes toWord{ to{ opacity:1; transform:none } }
+
+/* Event colour floods the whole band. Deep-to-bright in the event hue keeps the
+   white word legible at every point across the gradient. */
+.strip.take-four{ background:linear-gradient(100deg, #06455e 0%, #0d7ba3 45%, #38d6ff 100%); }
+.strip.take-six{ background:linear-gradient(100deg, #6b4103 0%, #b8800f 45%, #ffc233 100%); }
+.strip.take-wicket{ background:linear-gradient(100deg, #5c0912 0%, #a5121f 45%, #ff3b4c 100%); }
+.strip.take-fifty{ background:linear-gradient(100deg, #0d4a25 0%, #2b8f4c 45%, #7dff9e 100%); }
+.strip.take-over{ background:linear-gradient(100deg, #1a222e 0%, #2c3a4c 45%, #55697f 100%); }
+.strip.take-four{ --td1:#0b5f80; --td2:#04303f; }
+.strip.take-six{ --td1:#a06c0a; --td2:#513404; }
+.strip.take-wicket{ --td1:#8c0f1c; --td2:#47060c; }
+.strip.take-fifty{ --td1:#1f6b38; --td2:#0c3319; }
+.strip.take-over{ --td1:#2b3746; --td2:#141b23; }
+.strip{ --td1:#2b3746; --td2:#141b23; }
+/* A wicket lands harder and holds a beat longer. */
+.strip.taken.take-wicket .to-word{ animation:toWordHard .7s .06s cubic-bezier(.2,1.25,.3,1) both; letter-spacing:8px; }
+@keyframes toWordHard{ 0%{ opacity:0; transform:scale(1.75) rotateX(26deg) } 55%{ opacity:1; transform:scale(.97) } 100%{ opacity:1; transform:none } }
+
+/* ---------- reviewer rail ------------------------------------------------- */
+.rail{ position:fixed; right:18px; top:18px; z-index:50; width:212px; padding:12px; border-radius:10px;
+  background:rgb(8 9 12 / 92%); border:1px solid rgb(255 255 255 / 12%); box-shadow:0 18px 44px rgb(0 0 0 / 55%); color:#dfe7f5; }
+.rail[hidden], .rail-show[hidden]{ display:none; }
+.rail-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:9px; }
+.rail-head b{ font-size:13px; letter-spacing:1.4px; text-transform:uppercase; color:var(--mute); }
+.rail-head button{ border:1px solid rgb(255 255 255 / 20%); background:transparent; color:var(--mute); border-radius:6px; padding:3px 8px; font:600 12px/1 inherit; cursor:pointer; }
+.rail-head button:hover{ color:#fff; border-color:#fff; }
+.rail-grid{ display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.rail-grid button{ padding:9px 6px; border-radius:7px; cursor:pointer; border:1px solid rgb(255 255 255 / 14%); background:rgb(255 255 255 / 5%); color:#e7eefb;
+  font:700 13px/1 var(--f-ui); letter-spacing:.4px; transition:background .16s ease, border-color .16s ease, transform .16s ease; }
+.rail-grid button:hover{ background:rgb(255 255 255 / 12%); border-color:rgb(255 255 255 / 32%); }
+.rail-grid button:active{ transform:translateY(1px); background:rgb(255 255 255 / 18%); }
+.rail-grid button:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
+.rail-grid [data-ev="four"]{ color:var(--four); } .rail-grid [data-ev="six"]{ color:var(--six); } .rail-grid [data-ev="wicket"]{ color:#ff8b97; }
+.rail-auto{ display:flex; align-items:center; gap:7px; margin-top:10px; font-size:13px; color:var(--mute); cursor:pointer; }
+.rail-show{ position:fixed; right:18px; top:18px; z-index:50; padding:8px 13px; border-radius:8px; cursor:pointer;
+  border:1px solid rgb(255 255 255 / 16%); background:rgb(8 9 12 / 88%); color:#cfdcf0; font:700 13px/1 var(--f-ui); letter-spacing:.5px; }
+.rail-show:hover{ color:#fff; border-color:#fff; }
+
+/* =============================================================================
+   Compact — the strip stacks into three short rows; the riser lifts above it.
+   ============================================================================= */
+@media (max-width:760px){
+  body.compact .stage{ transform:none !important; width:100%; height:100%; }
+  body.compact .strip{ left:0; right:0; bottom:0; height:auto; animation:none;
+    grid-template-columns:1fr 1fr; grid-template-rows:auto auto auto;
+    grid-template-areas:"team score" "bats bats" "bowl over" "chase chase"; }
+  body.compact .mod{ padding:8px 12px; }
+  body.compact .mod + .mod::before{ display:none; }
+  body.compact .team{ grid-area:team; gap:10px; padding-left:16px; }
+  body.compact .badge{ width:28px; height:28px; font-size:12px; }
+  body.compact .team-text b{ font-size:15px; } body.compact .team-text small{ font-size:11px; }
+  body.compact .score{ grid-area:score; margin-top:0; height:auto; padding:8px 12px; align-items:flex-end; }
+  body.compact .score-row{ font-size:44px; } body.compact .overs-row{ font-size:16px; }
+  body.compact .bats{ grid-area:bats; border-top:1px solid var(--line); }
+  body.compact .bat{ height:32px; } body.compact .bat-name{ font-size:17px; } body.compact .bat-runs{ font-size:20px; } body.compact .bat-balls{ font-size:11px; }
+  body.compact .bowl{ grid-area:bowl; border-top:1px solid var(--line); }
+  body.compact .bowl-name{ font-size:16px; } body.compact .bowl-figs b{ font-size:18px; } body.compact .bowl-figs small{ font-size:11px; }
+  body.compact .over{ grid-area:over; border-top:1px solid var(--line); align-items:flex-end; }
+  body.compact .pills{ gap:5px; } body.compact .pill{ width:30px; height:22px; font-size:13px; }
+  body.compact .chase{ grid-area:chase; flex-direction:row; align-items:center; justify-content:space-between; border-top:1px solid var(--line); padding:8px 14px; }
+  body.compact .chase-need b{ font-size:26px; } body.compact .chase-rates b{ font-size:16px; }
+  body.compact .lab{ font-size:9px; letter-spacing:1.6px; }
+
+  body.compact .strip.taken{ height:110px; }
+  body.compact .to-track span{ font-size:34px; letter-spacing:3px; padding:0 14px; -webkit-text-stroke-width:1.5px; }
+  body.compact .to-word{ font-size:46px; letter-spacing:1px;
+    text-shadow:1px 1px 0 var(--td1), 2px 2px 0 var(--td1), 3px 3px 0 var(--td2), 4px 4px 0 var(--td2), 5px 8px 3px rgb(0 0 0 / 45%); }
+  body.compact .strip.taken.take-wicket .to-word{ letter-spacing:4px; }
+
+  .rail{ right:8px; top:8px; width:168px; padding:9px; }
+  .rail-grid button{ padding:7px 4px; font-size:12px; }
+  .rail-show{ right:8px; top:8px; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  *, *::before, *::after{ animation-duration:.001ms !important; animation-delay:0s !important; transition-duration:.001ms !important; }
+  .strip.taken .to-word, .strip.taken.take-wicket .to-word{ animation:none !important; opacity:1 !important; transform:none !important; }
+  .strip.taken .to-track{ animation:none !important; }
+}

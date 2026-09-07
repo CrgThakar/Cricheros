@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Corner Card — Live Ticker</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="viewport">
+  <div class="stage" id="stage">
+    <!-- Demo backdrop only. In OBS this layer is the stream itself. -->
+    <!-- Demo backdrop only. In OBS this layer is the stream itself. -->
+    <div class="backdrop">
+      <span class="horizon"></span>
+      <span class="grain"></span>
+    </div>
+
+    <!-- Chase line: lives above the card, whispers the maths -->
+    <div class="chase" id="chase">
+      <span><b>Target</b> <em id="target">229</em></span>
+      <span><b>Need</b> <em id="need">100</em> off <em id="left">160</em></span>
+      <span><b>CRR</b> <em id="crr">5.53</em></span>
+      <span><b>RRR</b> <em id="rrr">3.75</em></span>
+      <span class="chase-pship"><b>P'ship</b> <em id="pship">70 (77)</em></span>
+    </div>
+
+    <!-- The card -->
+    <div class="card" id="card">
+      <div class="card-body">
+        <div class="team">
+          <span class="badge" id="badge">CC</span>
+          <span class="team-name" id="teamName">Champions CC</span>
+          <span class="live"><i></i>Live</span>
+        </div>
+
+        <div class="score">
+          <span class="odo runs" id="runs"><span class="odo-v">129</span></span><span class="slash">/</span><span class="odo wkts" id="wkts"><span class="odo-v">5</span></span>
+          <span class="overs"><span class="odo" id="overs"><span class="odo-v">23.2</span></span><small>ov</small></span>
+        </div>
+
+        <div class="players">
+          <div class="bat" id="bat0">
+            <i class="strike"></i>
+            <span class="bat-name">Mayur Vasyani</span>
+            <span class="bat-figs"><span class="odo bat-runs"><span class="odo-v">23</span></span><small class="bat-balls">(41)</small></span>
+          </div>
+          <div class="bat" id="bat1">
+            <i class="strike"></i>
+            <span class="bat-name">Vinay Vasyani</span>
+            <span class="bat-figs"><span class="odo bat-runs"><span class="odo-v">47</span></span><small class="bat-balls">(36)</small></span>
+          </div>
+        </div>
+
+        <div class="bowl" id="bowl">
+          <span class="bowl-label">Bowling</span>
+          <span class="bowl-name" id="bowlName">Abhay Tomar</span>
+          <span class="bowl-figs"><b id="bowlFigs">32-0</b><small id="bowlOv">5.2</small></span>
+        </div>
+
+        <div class="ribbon" id="ribbon">
+          <span class="ribbon-label">Over</span>
+          <span class="dots" id="dots"></span>
+        </div>
+      </div>
+
+      <!-- Event card unfolds from the card's right edge -->
+      <div class="event" id="event" aria-live="polite">
+        <div class="event-inner">
+          <span class="ev-kicker" id="evKicker">Six</span>
+          <span class="ev-word" id="evWord">SIX</span>
+          <span class="ev-line" id="evLine">Vinay Vasyani · 47 (36)</span>
+          <span class="ev-sub" id="evSub">Over the ropes</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Centre-screen moment -->
+    <div class="moment" id="moment" aria-hidden="true">
+      <span class="moment-word" id="momentWord"></span>
+      <span class="moment-rule"></span>
+      <span class="moment-sub" id="momentSub"></span>
+    </div>
+  </div>
+</div>
+
+<!-- Reviewer controls: outside the stage, never in a capture -->
+<div class="rail" id="rail">
+  <div class="rail-head"><b>Match events</b><button type="button" id="railHide" title="Hide controls (H)">Hide</button></div>
+  <div class="rail-grid">
+    <button type="button" data-ev="dot">Dot ball</button>
+    <button type="button" data-ev="run1">Single</button>
+    <button type="button" data-ev="run2">Two</button>
+    <button type="button" data-ev="four">FOUR</button>
+    <button type="button" data-ev="six">SIX</button>
+    <button type="button" data-ev="wicket">WICKET</button>
+    <button type="button" data-ev="over">End of over</button>
+    <button type="button" data-ev="reset">Reset</button>
+  </div>
+  <label class="rail-auto"><input type="checkbox" id="autoPlay"> Auto-play demo</label>
+</div>
+<button type="button" class="rail-show" id="railShow" title="Show controls (H)">Controls</button>
+
+<script src="js/script.js"></script>
+</body>
+</html>

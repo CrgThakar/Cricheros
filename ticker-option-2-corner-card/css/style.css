@@ -1,0 +1,329 @@
+/* =============================================================================
+   Corner Card — live cricket ticker, option 2
+   A compact left-anchored card that stays out of the stream's way, then unfolds
+   an event card from its right edge when something happens. Graphite panels,
+   one acid accent for whatever is live right now, numbers that roll.
+   Designed at 1920x1080 and scaled to fit; reflows below 760px.
+   ============================================================================= */
+
+:root{
+  --g0:#08090c; --g1:#13171d; --g2:#1c2129; --g3:#262c35;
+  --line:rgb(255 255 255 / 9%);
+  --white:#f4f6f2; --mute:#8d97a2; --dim:#5d6772;
+  --acid:#c8ff3d; --acid-ink:#1a2200;
+  --four:#3fd2ff; --six:#ffb33d; --wkt:#ff3a4c; --fifty:#c8ff3d;
+  --team:#19c2b6;
+  --f-score:'Saira Condensed', 'Arial Narrow', sans-serif;
+  --f-name:'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --f-ui:'Barlow Semi Condensed', system-ui, sans-serif;
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+html,body{ height:100%; }
+body{ background:var(--g0); color:var(--white); overflow:hidden; font-family:var(--f-ui); }
+
+.viewport{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:var(--g0); }
+.stage{ position:relative; width:1920px; height:1080px; flex:none; transform-origin:center; overflow:hidden; }
+
+/* ---------- demo backdrop ------------------------------------------------- */
+.backdrop{ position:absolute; inset:0; overflow:hidden;
+  background:#06070a url("../assets/stream-frame.webp") center/cover no-repeat; }
+/* Scrim over the footage so the card and chase line keep their contrast. */
+.backdrop::after{ content:""; position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(70% 55% at 50% 105%, rgb(200 255 61 / 12%), transparent 70%),
+    linear-gradient(180deg, rgb(10 13 17 / 30%) 0%, rgb(6 7 10 / 70%) 100%); }
+.backdrop .horizon{ position:absolute; left:0; right:0; bottom:26%; height:1px;
+  background:linear-gradient(90deg, transparent, rgb(200 255 61 / 40%), transparent); }
+.backdrop .grain{ position:absolute; inset:0; opacity:.06; mix-blend-mode:overlay;
+  background:
+    repeating-linear-gradient(0deg, rgb(255 255 255 / 40%) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgb(255 255 255 / 25%) 0 1px, transparent 1px 4px); }
+
+/* ---------- chase line ---------------------------------------------------- */
+.chase{
+  position:absolute; left:72px; bottom:calc(72px + 276px + 14px);
+  display:flex; gap:26px; align-items:baseline;
+  font:600 17px/1 var(--f-ui); letter-spacing:.6px; text-transform:uppercase; color:var(--mute);
+  animation:chaseIn .6s .5s cubic-bezier(.2,.8,.2,1) both;
+}
+.chase b{ font-weight:600; color:var(--dim); margin-right:5px; }
+.chase em{ font:800 20px/1 var(--f-name); font-style:normal; color:var(--white); letter-spacing:.2px; }
+.chase #need, .chase #rrr{ color:var(--acid); }
+.chase span{ position:relative; }
+.chase span + span::before{ content:""; position:absolute; left:-14px; top:2px; width:1px; height:14px; background:var(--line); }
+@keyframes chaseIn{ from{ opacity:0; transform:translateY(8px) } to{ opacity:1; transform:none } }
+
+/* ---------- card ----------------------------------------------------------- */
+.card{
+  position:absolute; left:72px; bottom:72px; width:720px; height:276px;
+  transform-origin:0 100%;
+  filter:drop-shadow(0 26px 34px rgb(0 0 0 / 60%)) drop-shadow(0 2px 0 rgb(255 255 255 / 7%));
+}
+/* Entrance lives on .card-body, not .card: the reaction classes (kick, slam)
+   animate .card, and changing an element's animation-name restarts whatever
+   animation it falls back to - which would replay the entrance from opacity:0
+   after every boundary. */
+.card-body{ animation:cardIn .7s .15s cubic-bezier(.2,.9,.2,1) both; transform-origin:0 100%; }
+@keyframes cardIn{ from{ opacity:0; transform:translateY(24px) scaleY(.92) } to{ opacity:1; transform:none } }
+
+.card-body{
+  position:relative; z-index:2; width:100%; height:100%;
+  display:grid; grid-template-columns:1fr 250px; grid-template-rows:42px 100px 88px 46px;
+  grid-template-areas:"team team" "score bowl" "bats bats" "rib rib";
+  background:linear-gradient(180deg, var(--g2) 0%, var(--g1) 55%, var(--g0) 100%);
+  clip-path:polygon(0 0, calc(100% - 26px) 0, 100% 26px, 100% 100%, 0 100%);
+}
+/* Hairline frame drawn inside the clip so the chamfer keeps its edge */
+.card-body::before{ content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(180deg, rgb(255 255 255 / 10%), transparent 30%); }
+.card-body::after{ content:""; position:absolute; left:0; right:0; top:0; height:3px;
+  background:var(--team); }
+
+/* team header */
+.team{ grid-area:team; display:flex; align-items:center; gap:12px; padding:0 18px 0 16px;
+  border-bottom:1px solid var(--line); background:rgb(0 0 0 / 22%); }
+.badge{ display:grid; place-items:center; width:26px; height:26px; border-radius:4px;
+  background:var(--team); color:#04131a; font:800 12px/1 var(--f-score); letter-spacing:.5px; }
+.team-name{ font:700 19px/1 var(--f-name); text-transform:uppercase; letter-spacing:1.4px; color:var(--white); }
+.live{ margin-left:auto; display:inline-flex; align-items:center; gap:7px;
+  font:700 12px/1 var(--f-ui); letter-spacing:2px; text-transform:uppercase; color:var(--acid); }
+.live i{ width:7px; height:7px; border-radius:50%; background:var(--acid); box-shadow:0 0 10px var(--acid);
+  animation:pulse 1.6s ease-in-out infinite; }
+@keyframes pulse{ 0%,100%{ opacity:1 } 50%{ opacity:.35 } }
+
+/* score */
+.score{ grid-area:score; display:flex; align-items:baseline; gap:6px; padding:0 20px 0 18px;
+  font:900 92px/1 var(--f-score); color:var(--white); letter-spacing:-1px;
+  border-right:1px solid var(--line); }
+.score .slash{ color:var(--dim); font-weight:700; transform:translateY(-4px); display:inline-block; }
+.score .wkts{ color:var(--white); }
+.score .overs{ margin-left:auto; display:flex; align-items:baseline; gap:6px;
+  font:700 40px/1 var(--f-score); color:var(--white); letter-spacing:-.5px; }
+.score .overs small{ font:600 15px/1 var(--f-ui); color:var(--mute); text-transform:uppercase; letter-spacing:1.5px; }
+
+/* bowler */
+.bowl{ grid-area:bowl; display:flex; flex-direction:column; justify-content:center; gap:4px; padding:0 20px;
+  background:rgb(0 0 0 / 18%); }
+.bowl-label{ font:600 12px/1 var(--f-ui); letter-spacing:2.2px; text-transform:uppercase; color:var(--dim); }
+.bowl-name{ font:700 24px/1.05 var(--f-name); color:var(--white); letter-spacing:.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.bowl-figs{ display:flex; align-items:baseline; gap:8px; }
+.bowl-figs b{ font:800 26px/1 var(--f-score); color:var(--white); }
+.bowl-figs small{ font:600 15px/1 var(--f-ui); color:var(--mute); }
+.bowl-figs small::before{ content:"("; } .bowl-figs small::after{ content:")"; }
+
+/* batters */
+.players{ grid-area:bats; display:grid; grid-template-rows:1fr 1fr; border-top:1px solid var(--line); }
+.bat{ display:flex; align-items:center; gap:12px; padding:0 20px 0 14px; position:relative; }
+.bat + .bat{ border-top:1px solid var(--line); }
+.strike{ width:0; height:0; border:6px solid transparent; border-left:9px solid var(--acid); border-right:0;
+  opacity:0; transform:translateX(-6px) scale(.6); transition:opacity .25s ease, transform .3s cubic-bezier(.2,1.4,.3,1); }
+.bat.on-strike .strike{ opacity:1; transform:none; }
+.bat.on-strike .bat-name{ color:var(--white); }
+.bat-name{ font:700 24px/1 var(--f-name); color:var(--mute); letter-spacing:.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:color .3s ease; }
+.bat-figs{ margin-left:auto; display:flex; align-items:baseline; gap:8px; }
+.bat-runs{ font:800 30px/1 var(--f-score); color:var(--white); }
+.bat-balls{ font:600 15px/1 var(--f-ui); color:var(--mute); }
+.bat.on-strike .bat-runs{ color:var(--acid); }
+
+/* over ribbon */
+.ribbon{ grid-area:rib; display:flex; align-items:center; gap:14px; padding:0 18px;
+  background:rgb(0 0 0 / 34%); border-top:1px solid var(--line); }
+.ribbon-label{ font:600 11px/1 var(--f-ui); letter-spacing:2.4px; text-transform:uppercase; color:var(--dim); }
+.dots{ display:flex; gap:7px; align-items:center; }
+.dot{ width:44px; height:26px; border-radius:6px; background:rgb(255 255 255 / 9%);
+  display:grid; place-items:center; font:800 17px/1 var(--f-score); color:transparent; transition:background .3s ease, color .3s ease; }
+.dot.f0{ background:rgb(255 255 255 / 22%); }
+.dot.f1, .dot.f2, .dot.f3{ background:var(--white); color:var(--g0); }
+.dot.f4{ background:var(--four); color:#032330; }
+.dot.f6{ background:var(--six); color:#2a1700; }
+.dot.fW{ background:var(--wkt); color:#fff; }
+.dot.land{ animation:dotLand .5s cubic-bezier(.2,1.5,.3,1) both; }
+@keyframes dotLand{ 0%{ transform:scaleX(.2); opacity:0 } 60%{ transform:scaleX(1.18); opacity:1 } 100%{ transform:scaleX(1) } }
+.dots.clear .dot{ animation:dotClear .32s cubic-bezier(.4,0,.9,.3) both; }
+.dots.clear .dot:nth-child(2){ animation-delay:.03s } .dots.clear .dot:nth-child(3){ animation-delay:.06s }
+.dots.clear .dot:nth-child(4){ animation-delay:.09s } .dots.clear .dot:nth-child(5){ animation-delay:.12s } .dots.clear .dot:nth-child(6){ animation-delay:.15s }
+@keyframes dotClear{ to{ transform:scaleX(.1); opacity:0 } }
+
+/* ---------- odometer ------------------------------------------------------ */
+/* Old and new values share one grid cell; the old rolls up and out, the new
+   rolls in from below. Height is locked to 1em so the clip is exact. */
+.odo{ display:inline-grid; height:1em; line-height:1; overflow:hidden; vertical-align:baseline; }
+.odo-v{ grid-area:1/1; display:block; line-height:1; }
+.odo-v.out{ animation:odoOut .46s cubic-bezier(.3,.7,.2,1) both; }
+.odo-v.in { animation:odoIn  .46s cubic-bezier(.2,.9,.2,1) both; }
+@keyframes odoOut{ to{ transform:translateY(-108%); opacity:0 } }
+@keyframes odoIn { from{ transform:translateY(108%); opacity:0 } }
+
+/* ---------- event card ---------------------------------------------------- */
+.event{
+  position:absolute; left:100%; bottom:0; height:100%; width:0; overflow:hidden; z-index:1;
+  transition:width .55s cubic-bezier(.2,.9,.2,1);
+}
+.event-inner{
+  position:absolute; left:0; bottom:0; top:0; width:540px; padding:26px 30px 24px 34px;
+  display:flex; flex-direction:column; justify-content:center; gap:6px;
+  background:linear-gradient(180deg, var(--g2), var(--g0));
+  clip-path:polygon(0 0, 100% 0, 100% calc(100% - 26px), calc(100% - 26px) 100%, 0 100%);
+  opacity:0; transform:translateX(-18px);
+  transition:opacity .35s .18s ease, transform .5s .12s cubic-bezier(.2,.9,.2,1);
+}
+.event-inner::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--ev, var(--acid)); }
+.ev-kicker{ font:700 14px/1 var(--f-ui); letter-spacing:3px; text-transform:uppercase; color:var(--ev, var(--acid)); }
+.ev-word{ font:900 116px/.9 var(--f-score); color:var(--white); letter-spacing:-1px; text-transform:uppercase;
+  -webkit-text-stroke:1px rgb(255 255 255 / 30%);
+  text-shadow:
+    1px 1px 0 var(--d1), 2px 2px 0 var(--d1), 3px 3px 0 var(--d2), 4px 4px 0 var(--d2),
+    5px 5px 0 var(--d2), 6px 6px 0 var(--d2), 7px 7px 0 var(--d2),
+    8px 12px 3px rgb(0 0 0 / 50%), 0 22px 36px rgb(0 0 0 / 55%); }
+.ev-line{ font:700 26px/1.1 var(--f-name); color:var(--white); margin-top:8px; }
+.ev-sub{ font:500 16px/1.3 var(--f-ui); color:var(--mute); letter-spacing:.3px; }
+
+.card.is-event .event{ width:540px; }
+.card.is-event .event-inner{ opacity:1; transform:none; }
+.card.ev-four{ --ev:var(--four); } .card.ev-six{ --ev:var(--six); }
+.card.ev-wicket{ --ev:var(--wkt); } .card.ev-over{ --ev:var(--white); } .card.ev-fifty{ --ev:var(--fifty); }
+.card.ev-four .ev-word{ color:var(--four); } .card.ev-six .ev-word{ color:var(--six); }
+.card.ev-wicket .ev-word{ color:var(--wkt); } .card.ev-fifty .ev-word{ color:var(--fifty); }
+
+/* body reactions */
+.card.kick{ animation:kick .5s cubic-bezier(.2,1.4,.3,1) both; }
+@keyframes kick{ 0%{ transform:none } 35%{ transform:translateY(-6px) scale(1.012) } 100%{ transform:none } }
+.card.slam{ animation:slam .8s cubic-bezier(.25,1,.3,1) both; }
+@keyframes slam{ 0%{ transform:none } 14%{ transform:translateY(10px) scale(.972) } 42%{ transform:translateY(-4px) scale(1.006) } 100%{ transform:none } }
+.card.slam .card-body::before{ animation:redWash .9s ease-out both;
+  background:linear-gradient(180deg, rgb(255 58 76 / 65%), rgb(255 58 76 / 20%)); }
+@keyframes redWash{ 0%{ opacity:0 } 12%{ opacity:1 } 100%{ opacity:0 } }
+.card.flare .score{ animation:flare .6s ease both; }
+@keyframes flare{ 30%{ text-shadow:0 0 28px var(--ev, var(--acid)) } }
+
+/* batter swap */
+.bat.out{ animation:batOut .4s cubic-bezier(.4,0,.9,.3) both; }
+.bat.in { animation:batIn .55s .1s cubic-bezier(.2,.9,.2,1) both; }
+@keyframes batOut{ to{ transform:translateX(-30px); opacity:0 } }
+@keyframes batIn{ from{ transform:translateX(30px); opacity:0 } }
+
+/* ---------- centre-screen moment ------------------------------------------ */
+.moment{ position:absolute; inset:0; z-index:9; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:14px; pointer-events:none; visibility:hidden; }
+.moment::before{ content:""; position:absolute; inset:0; opacity:0;
+  background:radial-gradient(ellipse at 50% 48%, rgb(0 0 0 / 60%), rgb(0 0 0 / 25%) 42%, transparent 70%); }
+/* Event words are extruded: --d1 is the lit side of the block, --d2 the shaded
+   side, in the event's own hue. Straight-down with a slight drift reads as a
+   solid letter standing on the frame rather than a flat word with a shadow. */
+.moment, .event-inner{ --d1:#3a414a; --d2:#1b2027; }
+.moment.four,  .card.ev-four  .event-inner{ --d1:#1d8fb8; --d2:#0c5470; }
+.moment.six,   .card.ev-six   .event-inner{ --d1:#c27a17; --d2:#6f4306; }
+.moment.wicket,.card.ev-wicket .event-inner{ --d1:#b8202f; --d2:#5f0c15; }
+.moment.fifty, .card.ev-fifty .event-inner{ --d1:#8db41a; --d2:#4a6208; }
+.moment{ perspective:1100px; }
+.moment > *{ position:relative; z-index:1; }   /* above the ::before scrim */
+.moment-word{ font:900 220px/.88 var(--f-score); letter-spacing:4px; text-transform:uppercase; color:var(--white);
+  -webkit-text-stroke:1px rgb(255 255 255 / 35%);
+  text-shadow:
+    1px 1px 0 var(--d1), 2px 2px 0 var(--d1), 3px 3px 0 var(--d1), 4px 4px 0 var(--d1),
+    5px 5px 0 var(--d2), 6px 6px 0 var(--d2), 7px 7px 0 var(--d2), 8px 8px 0 var(--d2),
+    9px 9px 0 var(--d2), 10px 10px 0 var(--d2), 11px 11px 0 var(--d2), 12px 12px 0 var(--d2),
+    14px 20px 4px rgb(0 0 0 / 55%), 0 40px 70px rgb(0 0 0 / 75%);
+  opacity:0; }
+.moment-rule{ width:220px; height:6px; background:var(--m, var(--acid)); transform:scaleX(0); box-shadow:0 0 24px var(--m, var(--acid)); }
+.moment-sub{ font:600 30px/1 var(--f-ui); letter-spacing:5px; text-transform:uppercase; color:var(--white);
+  text-shadow:0 2px 18px rgb(0 0 0 / 90%); opacity:0; }
+.moment.four{ --m:var(--four); } .moment.six{ --m:var(--six); } .moment.wicket{ --m:var(--wkt); } .moment.fifty{ --m:var(--fifty); }
+.moment.four .moment-word{ color:var(--four); } .moment.six .moment-word{ color:var(--six); }
+.moment.wicket .moment-word{ color:var(--wkt); letter-spacing:10px; } .moment.fifty .moment-word{ color:var(--fifty); }
+
+.moment.show{ visibility:visible; }
+.moment.show::before{ animation:mScrim 1.6s ease both; }
+.moment.show .moment-word{ animation:mWord 1.6s cubic-bezier(.16,1.1,.3,1) both; }
+.moment.show .moment-rule{ animation:mRule 1.6s cubic-bezier(.2,.9,.2,1) both; }
+.moment.show .moment-sub{ animation:mSub 1.6s ease both; }
+.moment.show.wicket .moment-word{ animation:mWicket 2s cubic-bezier(.2,1.3,.3,1) both; }
+.moment.show.wicket::before, .moment.show.wicket .moment-rule, .moment.show.wicket .moment-sub{ animation-duration:2s; }
+@keyframes mScrim{ 0%{opacity:0} 12%{opacity:1} 76%{opacity:1} 100%{opacity:0} }
+@keyframes mWord{ 0%{ transform:translateY(40px) rotateX(38deg) scale(.7); opacity:0 } 16%{ transform:rotateX(0) scale(1); opacity:1 } 74%{ opacity:1 } 100%{ transform:translateY(-14px) rotateX(-10deg); opacity:0 } }
+@keyframes mWicket{ 0%{ transform:scale(2) rotate(-3deg) rotateX(30deg); opacity:0 } 14%{ transform:scale(.95) rotate(1deg) rotateX(0); opacity:1 } 24%{ transform:none } 78%{ opacity:1 } 100%{ transform:scale(1.08); opacity:0 } }
+@keyframes mRule{ 0%{ transform:scaleX(0) } 22%{ transform:scaleX(1) } 74%{ transform:scaleX(1); opacity:1 } 100%{ transform:scaleX(1.3); opacity:0 } }
+@keyframes mSub{ 0%,14%{ transform:translateY(10px); opacity:0 } 30%{ transform:none; opacity:1 } 74%{ opacity:1 } 100%{ opacity:0 } }
+
+/* ---------- reviewer rail ------------------------------------------------- */
+.rail{ position:fixed; right:18px; top:18px; z-index:50; width:212px; padding:12px; border-radius:10px;
+  background:rgb(8 9 12 / 92%); border:1px solid rgb(255 255 255 / 12%); box-shadow:0 18px 44px rgb(0 0 0 / 55%);
+  font-family:var(--f-ui); color:#dfe7f5; }
+.rail[hidden], .rail-show[hidden]{ display:none; }
+.rail-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:9px; }
+.rail-head b{ font-size:13px; letter-spacing:1.4px; text-transform:uppercase; color:var(--mute); }
+.rail-head button{ border:1px solid rgb(255 255 255 / 20%); background:transparent; color:var(--mute);
+  border-radius:6px; padding:3px 8px; font:600 12px/1 inherit; cursor:pointer; }
+.rail-head button:hover{ color:#fff; border-color:#fff; }
+.rail-grid{ display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.rail-grid button{ padding:9px 6px; border-radius:7px; cursor:pointer; border:1px solid rgb(255 255 255 / 14%);
+  background:rgb(255 255 255 / 5%); color:#e7eefb; font:700 13px/1 var(--f-ui); letter-spacing:.4px;
+  transition:background .16s ease, border-color .16s ease, transform .16s ease; }
+.rail-grid button:hover{ background:rgb(255 255 255 / 12%); border-color:rgb(255 255 255 / 32%); }
+.rail-grid button:active{ transform:translateY(1px); background:rgb(255 255 255 / 18%); }
+.rail-grid button:focus-visible{ outline:2px solid var(--acid); outline-offset:2px; }
+.rail-grid [data-ev="four"]{ color:var(--four); } .rail-grid [data-ev="six"]{ color:var(--six); } .rail-grid [data-ev="wicket"]{ color:#ff8b97; }
+.rail-auto{ display:flex; align-items:center; gap:7px; margin-top:10px; font-size:13px; color:var(--mute); cursor:pointer; }
+.rail-show{ position:fixed; right:18px; top:18px; z-index:50; padding:8px 13px; border-radius:8px; cursor:pointer;
+  border:1px solid rgb(255 255 255 / 16%); background:rgb(8 9 12 / 88%); color:#cfdcf0; font:700 13px/1 var(--f-ui); letter-spacing:.5px; }
+.rail-show:hover{ color:#fff; border-color:#fff; }
+
+/* =============================================================================
+   Compact — below 760px the card becomes a full-width bar and the event card
+   unfolds upward instead of sideways.
+   ============================================================================= */
+@media (max-width:760px){
+  body.compact .stage{ transform:none !important; width:100%; height:100%; }
+  body.compact .chase{ left:10px; right:10px; bottom:auto; top:12px; gap:14px; flex-wrap:wrap; font-size:12px; }
+  body.compact .chase em{ font-size:14px; }
+  body.compact .chase span + span::before{ display:none; }
+  body.compact .chase-pship{ display:none; }
+
+  body.compact .card{ left:0; right:0; bottom:0; width:auto; height:auto; animation:none; }
+  body.compact .card-body{
+    grid-template-columns:1fr 130px; grid-template-rows:34px 68px 76px 38px;
+    clip-path:none; box-shadow:none;
+  }
+  body.compact .team{ padding:0 12px; gap:8px; }
+  body.compact .team-name{ font-size:14px; letter-spacing:1px; }
+  body.compact .live{ font-size:10px; }
+  body.compact .score{ padding:0 12px; font-size:54px; gap:3px; }
+  body.compact .score .overs{ font-size:22px; }
+  body.compact .score .overs small{ font-size:10px; }
+  body.compact .bowl{ padding:0 12px; gap:2px; }
+  body.compact .bowl-label{ font-size:9px; }
+  body.compact .bowl-name{ font-size:15px; }
+  body.compact .bowl-figs b{ font-size:17px; } body.compact .bowl-figs small{ font-size:11px; }
+  body.compact .bat{ padding:0 12px 0 10px; gap:8px; }
+  body.compact .bat-name{ font-size:16px; }
+  body.compact .bat-runs{ font-size:20px; } body.compact .bat-balls{ font-size:11px; }
+  body.compact .ribbon{ padding:0 12px; gap:10px; }
+  body.compact .dot{ width:34px; height:22px; font-size:13px; }
+
+  body.compact .event{ left:0; right:0; bottom:100%; top:auto; height:auto; width:auto; max-height:0;
+    transition:max-height .5s cubic-bezier(.2,.9,.2,1); }
+  body.compact .event-inner{ position:static; width:auto; padding:14px 14px 12px 18px; clip-path:none; gap:3px; }
+  body.compact .card.is-event .event{ max-height:200px; }
+  body.compact .ev-word{ font-size:52px; }
+  body.compact .ev-line{ font-size:17px; margin-top:4px; }
+  body.compact .ev-sub{ font-size:12px; }
+
+  body.compact .moment-word{ font-size:72px; letter-spacing:1px;
+    text-shadow:1px 1px 0 var(--d1), 2px 2px 0 var(--d1), 3px 3px 0 var(--d2), 4px 4px 0 var(--d2), 5px 5px 0 var(--d2), 4px 10px 3px rgb(0 0 0 / 55%), 0 20px 34px rgb(0 0 0 / 70%); }
+  body.compact .ev-word{ text-shadow:1px 1px 0 var(--d1), 2px 2px 0 var(--d2), 3px 3px 0 var(--d2), 3px 6px 2px rgb(0 0 0 / 50%); }
+  body.compact .moment-rule{ width:110px; height:4px; }
+  body.compact .moment-sub{ font-size:13px; letter-spacing:2px; }
+
+  .rail{ right:8px; top:auto; bottom:8px; width:168px; padding:9px; }
+  .rail-grid button{ padding:7px 4px; font-size:12px; }
+  .rail-show{ right:8px; top:auto; bottom:8px; }
+}
+
+/* ---------- motion preferences ------------------------------------------- */
+@media (prefers-reduced-motion:reduce){
+  *, *::before, *::after{ animation-duration:.001ms !important; animation-delay:0s !important; transition-duration:.001ms !important; }
+  .live i{ animation:none; }
+  .moment.show .moment-word, .moment.show .moment-sub, .moment.show .moment-rule, .moment.show::before{
+    animation:mStatic 1.2s steps(1,end) both !important; }
+  @keyframes mStatic{ 0%,99%{ opacity:1; transform:none } 100%{ opacity:0 } }
+}

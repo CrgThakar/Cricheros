@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CricHeroes — Practical Test for Web Designer</title>
+<style>
+  :root{--bg:#0f1417;--card:#171d21;--line:#252d33;--ink:#eef2f4;--mute:#94a3ab;--teal:#12b3a6;--red:#e21c28}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:960px;margin:0 auto;padding:56px 24px 72px}
+  h1{margin:0 0 8px;font-size:30px;letter-spacing:-.02em}
+  .sub{margin:0 0 40px;color:var(--mute)}
+  h2{font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--mute);
+     margin:40px 0 14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(272px,1fr))}
+  a.card{display:block;padding:20px;border:1px solid var(--line);border-radius:12px;
+         background:var(--card);color:inherit;text-decoration:none;transition:border-color .15s,transform .15s}
+  a.card:hover{border-color:var(--teal);transform:translateY(-2px)}
+  .tag{display:inline-block;font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+       color:var(--teal);margin-bottom:8px}
+  .name{font-weight:650;font-size:17px;margin-bottom:6px}
+  .desc{color:var(--mute);font-size:14px;line-height:1.5}
+  .note{margin-top:40px;color:var(--mute);font-size:14px}
+  .note a{color:var(--teal)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>CricHeroes — Practical Test for Web Designer</h1>
+  <p class="sub">Two assignments. Every option below is a self-contained folder — open it, zip it, or share it on its own.</p>
+
+  <h2>Assignment 1 — Match Summary</h2>
+  <div class="grid">
+    <a class="card" href="scorecard-option-1/index.html">
+      <span class="tag">Option 1</span>
+      <div class="name">Match Summary</div>
+      <div class="desc">Result-first hero, eight views under one tab bar, per-breakpoint density, lazy WebP gallery.</div>
+    </a>
+  </div>
+
+  <h2>Assignment 2 — Live Score Ticker</h2>
+  <div class="grid">
+    <a class="card" href="ticker-option-1-broadcast-bar/index.html">
+      <span class="tag">Option 1</span>
+      <div class="name">Broadcast Bar</div>
+      <div class="desc">Full-width lower third, 266px tall. Everything visible, always.</div>
+    </a>
+    <a class="card" href="ticker-option-2-corner-card/index.html">
+      <span class="tag">Option 2</span>
+      <div class="name">Corner Card</div>
+      <div class="desc">Compact corner card, 720×276, that unfolds only when an event lands.</div>
+    </a>
+    <a class="card" href="ticker-option-3-baseline-strip/index.html">
+      <span class="tag">Option 3</span>
+      <div class="name">Baseline Strip</div>
+      <div class="desc">A 92px band that keeps the stream clear — the strip itself becomes the event.</div>
+    </a>
+    <a class="card" href="ticker-option-4-replay-wall/index.html">
+      <span class="tag">Option 4</span>
+      <div class="name">Replay Wall</div>
+      <div class="desc">The ticker triggers a broadcast replay sequence rather than drawing a graphic.</div>
+    </a>
+  </div>
+
+  <p class="note">Each ticker opens with an event panel top-right: fire individual events, or tick
+    <em>Auto-play demo</em>. Press <strong>H</strong> to hide the panel for a clean overlay.
+    Design and animation notes: <a href="explanation.html">docs/EXPLANATION.md</a>.</p>
+</div>
+</body>
+</html>
