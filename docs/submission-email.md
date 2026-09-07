@@ -1,12 +1,12 @@
 # Submission email - CricHeroes Practical Test (Web Designer)
 
-> Fill the bracketed placeholders before sending:
-> `[YOUR NAME]`, `[LIVE DEMO LINK]`, `[SOURCE CODE LINK]`, `[ZIP LINK]`, `[YOUR PHONE]`.
+> Fill the remaining placeholder before sending: `[YOUR PHONE]`.
+> The live demo, source and ZIP links are already filled in.
 > If you attach the ZIP instead of linking it, delete the ZIP line and say "attached".
 
 ---
 
-**Subject:** Both innings played - Web Designer practical test, [YOUR NAME]
+**Subject:** Both innings played - Web Designer practical test, Chirag Thakar
 
 ---
 
@@ -16,9 +16,9 @@ Thanks for the brief. Both innings are done: Assignment 1 played straight throug
 Assignment 2 played four different ways, because one shot was never going to answer the
 question.
 
-**Live demo:** [LIVE DEMO LINK]
-**Source code:** [SOURCE CODE LINK]
-**ZIP:** [ZIP LINK]
+**Live demo:** https://crgthakar.github.io/Cricheros
+**Source code:** https://github.com/CrgThakar/Cricheros
+**ZIP:** https://github.com/CrgThakar/Cricheros/archive/refs/heads/main.zip
 
 Everything is static HTML, CSS and JavaScript. No framework, no install, no external
 services. The ZIP opens offline: unzip it and open `index.html`.
@@ -27,7 +27,7 @@ services. The ZIP opens offline: unzip it and open `index.html`.
 
 ### First innings: match summary
 
-[LIVE DEMO LINK]/scorecard-option-1/
+https://crgthakar.github.io/Cricheros/scorecard-option-1/
 
 - **The result is read off the scoreboard first.** The page opens on one dark card carrying
   the result banner, both innings, the Player of the Match, and the toss and format line. I
@@ -49,16 +49,16 @@ to be the real question, and every answer builds a different product. All four r
 match engine, so run rates, strike rotation and the chase stay correct through any sequence of
 events you throw at them.
 
-- **Option 1, broadcast bar:** [LIVE DEMO LINK]/ticker-option-1-broadcast-bar/
+- **Option 1, broadcast bar:** https://crgthakar.github.io/Cricheros/ticker-option-1-broadcast-bar/
   The full-width lower third. Everything on show at all times, and it costs the bottom quarter
   of the frame.
-- **Option 2, corner card:** [LIVE DEMO LINK]/ticker-option-2-corner-card/
+- **Option 2, corner card:** https://crgthakar.github.io/Cricheros/ticker-option-2-corner-card/
   A compact panel at bottom left holding about a fifth of the frame. Quiet between
   deliveries, and it opens when something happens.
-- **Option 3, baseline strip:** [LIVE DEMO LINK]/ticker-option-3-baseline-strip/
+- **Option 3, baseline strip:** https://crgthakar.github.io/Cricheros/ticker-option-3-baseline-strip/
   A 92px band across the full width, so there is no corner left to collide with a streamer's
   own overlays. On a boundary or a wicket, the band itself does the celebrating.
-- **Option 4, replay wall:** [LIVE DEMO LINK]/ticker-option-4-replay-wall/
+- **Option 4, replay wall:** https://crgthakar.github.io/Cricheros/ticker-option-4-replay-wall/
   The one a director would recognise. The ticker calls for the replay instead of drawing over
   the action, and a full-screen wipe hides the cut between the live feed and the replay.
 
@@ -92,5 +92,5 @@ length a good deal further.
 Thanks for the opportunity.
 
 Best regards,
-[YOUR NAME]
+Chirag Thakar
 [YOUR PHONE]
